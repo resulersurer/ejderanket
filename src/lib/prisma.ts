@@ -30,9 +30,18 @@ const prismaClientSingleton = () => {
     databaseUrl = 'postgresql://dummy:dummy@ep-dummy-123456.us-east-1.aws.neon.tech/neondb';
   } else if (databaseUrl) {
     // Sanitize the connection string by removing parameters like channel_binding
-    // that may cause parsing issues in the serverless driver, defaulting to localhost.
-    databaseUrl = databaseUrl.replace(/[\?&]channel_binding=[^&]+/g, '');
+    // that are not supported by the serverless driver parser and cause default host fallback.
+    try {
+      const parsedUrl = new URL(databaseUrl);
+      parsedUrl.searchParams.delete('channel_binding');
+      databaseUrl = parsedUrl.toString();
+    } catch (e) {
+      console.warn('⚠️ Failed to parse databaseUrl using URL API:', e);
+    }
   }
+
+  console.log('PRISMA_INIT: process.env.DATABASE_URL is:', typeof process.env.DATABASE_URL, JSON.stringify(process.env.DATABASE_URL));
+  console.log('PRISMA_INIT: passed to Pool is:', JSON.stringify(databaseUrl));
 
   const pool = new Pool({ connectionString: databaseUrl });
   const adapter = new PrismaNeon(pool as any);
