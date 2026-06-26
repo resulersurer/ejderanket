@@ -122,7 +122,6 @@ export default function SurveyPage() {
     setServerError(null);
 
     if (!validateForm()) {
-      // Scroll to the first error
       const firstErrorKey = Object.keys(errors)[0];
       const element = document.getElementById(firstErrorKey);
       if (element) {
@@ -152,29 +151,38 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-radial from-[#1e293b] via-[#0f172a] to-[#020617] text-slate-100 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-500 selection:text-slate-900">
+    <div className="min-h-screen bg-radial from-[#3b0712] via-[#0f0206] to-[#020001] text-slate-100 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-500 selection:text-slate-900">
       
       {/* Background Decorative Circles */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl -z-10 animate-pulse duration-[8s]" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -z-10 animate-pulse duration-[12s]" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-red-700/5 rounded-full blur-3xl -z-10 animate-pulse duration-[8s]" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl -z-10 animate-pulse duration-[12s]" />
 
-      <header className="max-w-xl mx-auto text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/50 backdrop-blur-md mb-4 text-amber-500 text-xs font-semibold tracking-wider uppercase">
+      <header className="max-w-xl mx-auto text-center mb-6">
+        {/* Brand Logo */}
+        <div className="mb-4 inline-block">
+          <img
+            src="/ejder-logo.png"
+            alt="Ejder Turizm Logo"
+            className="mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border border-red-500/25 shadow-[0_0_20px_rgba(239,68,68,0.15)] object-cover"
+          />
+        </div>
+        
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-950/80 border border-red-900/30 backdrop-blur-md mb-4 text-amber-400 text-xs font-semibold tracking-wider uppercase">
           <Compass className="w-3.5 h-3.5 animate-spin duration-[20s]" /> Ejder Turizm Memnuniyet Portalı
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-amber-400">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white bg-clip-text text-transparent bg-gradient-to-r from-white via-red-100 to-amber-300">
           Seyahat Deneyiminizi Değerlendirin
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-md mx-auto">
-          Ejder Turizm ile gerçekleştirdiğiniz seyahatinizin kalitesini artırabilmemiz için geri bildiriminiz bizim için çok değerlidir.
+        <p className="mt-3 text-sm text-slate-400 max-w-sm mx-auto">
+          Ejder Turizm seyahatinizin kalitesini analiz edebilmemiz için geri bildiriminiz bizim için çok değerlidir.
         </p>
       </header>
 
       <main className="flex-grow flex items-center justify-center max-w-xl mx-auto w-full">
-        <div className="w-full bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden transition-all duration-300 hover:border-slate-700/50">
+        <div className="w-full bg-red-950/10 border border-red-950/30 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden transition-all duration-300 hover:border-red-900/20">
           
-          {/* Subtle Golden Border Glow */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-amber-500 to-yellow-400" />
+          {/* Top Gold-Crimson Accent Bar */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-amber-500 to-red-700" />
 
           {submitSuccess ? (
             /* Success Screen */
@@ -198,7 +206,7 @@ export default function SurveyPage() {
 
               <button
                 onClick={() => setSubmitSuccess(false)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm transition-all duration-200"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-950/80 border border-red-900/30 hover:bg-red-900/50 text-white font-medium text-sm transition-all duration-200"
               >
                 Yeni Bir Yanıt Gönder
               </button>
@@ -216,7 +224,7 @@ export default function SurveyPage() {
 
               {/* Step 1: Passenger Info */}
               <div className="space-y-4">
-                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-slate-800 pb-2">
+                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-red-950/40 pb-2">
                   <ShieldCheck className="w-4 h-4" /> 1. Yolcu ve Seyahat Bilgileri
                 </h3>
 
@@ -231,9 +239,9 @@ export default function SurveyPage() {
                       value={form.passengerName}
                       onChange={handleInputChange}
                       placeholder="Örn. Ahmet Yılmaz"
-                      className={`w-full bg-slate-950/50 border ${
-                        errors.passengerName ? 'border-red-500/60 focus:ring-red-500/50' : 'border-slate-800 focus:border-amber-500/50 focus:ring-amber-500/30'
-                      } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all duration-200`}
+                      className={`w-full bg-black/40 border ${
+                        errors.passengerName ? 'border-red-500/60 focus:ring-red-500/50' : 'border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-700 focus:outline-none focus:ring-4 transition-all duration-200`}
                     />
                     {errors.passengerName && (
                       <p className="mt-1 text-xs text-red-400">{errors.passengerName}</p>
@@ -250,9 +258,9 @@ export default function SurveyPage() {
                       value={form.reservationNo}
                       onChange={handleInputChange}
                       placeholder="Örn. EJ-1234-A"
-                      className={`w-full bg-slate-950/50 border ${
-                        errors.reservationNo ? 'border-red-500/60 focus:ring-red-500/50' : 'border-slate-800 focus:border-amber-500/50 focus:ring-amber-500/30'
-                      } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all duration-200`}
+                      className={`w-full bg-black/40 border ${
+                        errors.reservationNo ? 'border-red-500/60 focus:ring-red-500/50' : 'border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-700 focus:outline-none focus:ring-4 transition-all duration-200`}
                     />
                     {errors.reservationNo && (
                       <p className="mt-1 text-xs text-red-400">{errors.reservationNo}</p>
@@ -270,9 +278,9 @@ export default function SurveyPage() {
                     value={form.tourName}
                     onChange={handleInputChange}
                     placeholder="Örn. Klasik İtalya ve Toskana Turu"
-                    className={`w-full bg-slate-950/50 border ${
-                      errors.tourName ? 'border-red-500/60 focus:ring-red-500/50' : 'border-slate-800 focus:border-amber-500/50 focus:ring-amber-500/30'
-                    } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all duration-200`}
+                    className={`w-full bg-black/40 border ${
+                      errors.tourName ? 'border-red-500/60 focus:ring-red-500/50' : 'border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20'
+                    } rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-700 focus:outline-none focus:ring-4 transition-all duration-200`}
                   />
                   {errors.tourName && (
                     <p className="mt-1 text-xs text-red-400">{errors.tourName}</p>
@@ -282,7 +290,7 @@ export default function SurveyPage() {
 
               {/* Step 2: Evaluation */}
               <div className="space-y-5 pt-2">
-                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-slate-800 pb-2">
+                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-red-950/40 pb-2">
                   <Star className="w-4 h-4" /> 2. Memnuniyet Değerlendirmesi
                 </h3>
 
@@ -296,7 +304,7 @@ export default function SurveyPage() {
                       <div
                         key={category.key}
                         id={category.key}
-                        className="p-3.5 rounded-xl bg-slate-950/30 border border-slate-800/40 space-y-2 transition-all duration-200 hover:border-slate-850 hover:bg-slate-950/40"
+                        className="p-3.5 rounded-xl bg-black/20 border border-red-950/20 space-y-2 transition-all duration-200 hover:border-red-900/30 hover:bg-black/30"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                           <div>
@@ -329,7 +337,7 @@ export default function SurveyPage() {
                                     className={`w-6 h-6 stroke-1.5 transition-all duration-150 ${
                                       filled
                                         ? 'fill-amber-400 stroke-amber-400 filter drop-shadow-[0_0_4px_rgba(245,158,11,0.25)]'
-                                        : 'stroke-slate-600 hover:stroke-slate-400'
+                                        : 'stroke-red-900 hover:stroke-amber-500/50'
                                     }`}
                                   />
                                 </button>
@@ -346,7 +354,7 @@ export default function SurveyPage() {
 
               {/* Step 3: Comments */}
               <div className="space-y-3 pt-2">
-                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-slate-800 pb-2">
+                <h3 className="text-md font-semibold text-amber-500 flex items-center gap-2 border-b border-red-950/40 pb-2">
                   <MessageSquare className="w-4 h-4" /> 3. Ekstra Yorum ve Görüşleriniz
                 </h3>
 
@@ -357,7 +365,7 @@ export default function SurveyPage() {
                     onChange={handleInputChange}
                     placeholder="Oteller, rehberlik, yemekler veya eklemek istediğiniz diğer detaylar hakkında görüşlerinizi bizimle paylaşın..."
                     rows={4}
-                    className="w-full bg-slate-950/50 border border-slate-800 focus:border-amber-500/50 focus:ring-amber-500/30 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all duration-200 resize-y min-h-[90px]"
+                    className="w-full bg-black/40 border border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-700 focus:outline-none focus:ring-4 transition-all duration-200 resize-y min-h-[90px]"
                   />
                   {errors.additionalComments && (
                     <p className="mt-1 text-xs text-red-400">{errors.additionalComments}</p>
@@ -369,7 +377,7 @@ export default function SurveyPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-amber-600 to-amber-500 hover:from-blue-500 hover:via-amber-500 hover:to-amber-400 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-amber-500/10 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99] transition-all duration-200"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-800 via-amber-600 to-amber-500 hover:from-red-700 hover:via-amber-500 hover:to-amber-450 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-red-950/30 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99] transition-all duration-200"
               >
                 {isSubmitting ? (
                   <>
@@ -413,7 +421,7 @@ export default function SurveyPage() {
         <div className="mt-2.5">
           <a
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs text-amber-500/80 hover:text-amber-400 transition-all font-medium border border-amber-500/20 bg-amber-500/5 px-2.5 py-1 rounded-full hover:border-amber-500/40"
+            className="inline-flex items-center gap-1.5 text-xs text-amber-500/80 hover:text-amber-400 transition-all font-medium border border-red-950/40 bg-red-950/20 px-2.5 py-1 rounded-full hover:border-red-900/30"
           >
             Admin Paneli Görünümü ↗
           </a>

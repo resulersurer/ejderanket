@@ -13,7 +13,6 @@ import {
   AlertCircle,
   Database,
   ArrowLeft,
-  BookOpen,
   Award,
   BedDouble,
   Utensils
@@ -86,11 +85,11 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6">
+      <div className="min-h-screen bg-[#050001] text-slate-100 flex flex-col items-center justify-center p-6">
         <div className="space-y-4 text-center">
           <div className="relative inline-flex">
             <Compass className="w-12 h-12 text-amber-500 animate-spin duration-[4s]" />
-            <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-amber-500/20 animate-ping" />
+            <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-red-500/20 animate-ping" />
           </div>
           <h2 className="text-lg font-semibold tracking-wider text-slate-300">İstatistikler Yükleniyor...</h2>
           <p className="text-xs text-slate-500 max-w-xs">Ejder Turizm memnuniyet verileri toparlanıyor.</p>
@@ -101,7 +100,7 @@ export default function DashboardPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6">
+      <div className="min-h-screen bg-[#050001] text-slate-100 flex flex-col items-center justify-center p-6">
         <div className="bg-red-500/10 border border-red-500/20 max-w-md p-6 rounded-2xl text-center space-y-4">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
           <h2 className="text-xl font-bold text-white">Veriler Yüklenemedi</h2>
@@ -111,7 +110,7 @@ export default function DashboardPage() {
               setLoading(true);
               fetchDashboardData();
             }}
-            className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all"
+            className="inline-flex items-center gap-2 bg-red-950 hover:bg-red-900 border border-red-800 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all"
           >
             <RefreshCw className="w-4 h-4" /> Yeniden Dene
           </button>
@@ -120,10 +119,8 @@ export default function DashboardPage() {
     );
   }
 
-  // Extract unique tours list for select filter
   const uniqueTours = ['all', ...Array.from(new Set(data.feedbacks.map((f) => f.tourName)))];
 
-  // Filter feedbacks list based on search term, minimum score, and selected tour
   const filteredFeedbacks = data.feedbacks.filter((fb) => {
     const matchesSearch =
       fb.passengerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,7 +145,7 @@ export default function DashboardPage() {
             className={`w-${size} h-${size} ${
               star <= Math.round(rating)
                 ? 'fill-amber-400 stroke-amber-400'
-                : 'stroke-slate-600 fill-transparent'
+                : 'stroke-red-950 fill-transparent'
             }`}
           />
         ))}
@@ -164,28 +161,35 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 selection:bg-amber-500 selection:text-slate-900">
+    <div className="min-h-screen bg-radial from-[#220207] via-[#050001] to-[#000000] text-slate-100 selection:bg-amber-500 selection:text-slate-900">
       
       {/* Background Ornaments */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-700/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-600/3 rounded-full blur-3xl -z-10" />
 
       {/* Navigation Header */}
-      <header className="sticky top-0 bg-slate-950/70 border-b border-slate-900 backdrop-blur-md z-20">
+      <header className="sticky top-0 bg-red-950/40 border-b border-red-950/60 backdrop-blur-md z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <a
               href="/"
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all"
+              className="p-2 rounded-lg bg-red-950/80 border border-red-900/30 text-slate-300 hover:text-white transition-all"
               title="Anket Formuna Dön"
             >
               <ArrowLeft className="w-4 h-4" />
             </a>
+            
+            <img
+              src="/ejder-logo.png"
+              alt="Ejder Logo"
+              className="w-10 h-10 rounded-lg border border-red-500/20 object-cover"
+            />
+
             <div>
-              <span className="text-xs font-semibold text-amber-500 tracking-widest uppercase block">
+              <span className="text-[10px] font-semibold text-amber-400 tracking-widest uppercase block">
                 EJDER TURİZM
               </span>
-              <h1 className="text-md sm:text-lg font-bold text-white tracking-tight flex items-center gap-1.5">
+              <h1 className="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
                 Müşteri Memnuniyeti Analiz Paneli
               </h1>
             </div>
@@ -195,7 +199,7 @@ export default function DashboardPage() {
             <button
               onClick={fetchDashboardData}
               disabled={isRefreshing}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 rounded-xl transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium bg-red-950/60 hover:bg-red-900/50 border border-red-900/30 text-slate-200 rounded-xl transition-all disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               Yenile
@@ -228,12 +232,12 @@ export default function DashboardPage() {
         <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           
           {/* Total Submissions */}
-          <div className="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl flex flex-col justify-between hover:border-slate-800/80 transition-all duration-200 group">
+          <div className="bg-red-950/10 border border-red-950/20 p-5 rounded-2xl flex flex-col justify-between hover:border-red-900/20 transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Toplam Katılım
               </span>
-              <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+              <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 group-hover:scale-110 transition-transform">
                 <Users className="w-4 h-4" />
               </div>
             </div>
@@ -244,7 +248,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Overall Average */}
-          <div className="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl flex flex-col justify-between hover:border-slate-800/80 transition-all duration-200 group">
+          <div className="bg-red-950/10 border border-red-950/20 p-5 rounded-2xl flex flex-col justify-between hover:border-red-900/20 transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Genel Ortalama
@@ -265,7 +269,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Guide Performance */}
-          <div className="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl flex flex-col justify-between hover:border-slate-800/80 transition-all duration-200 group">
+          <div className="bg-red-950/10 border border-red-950/20 p-5 rounded-2xl flex flex-col justify-between hover:border-red-900/20 transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Rehberlik Ort.
@@ -286,7 +290,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Hotel Satisfaction */}
-          <div className="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl flex flex-col justify-between hover:border-slate-800/80 transition-all duration-200 group">
+          <div className="bg-red-950/10 border border-red-950/20 p-5 rounded-2xl flex flex-col justify-between hover:border-red-900/20 transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Otel Ortalaması
@@ -307,7 +311,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Restaurant Satisfaction */}
-          <div className="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl flex flex-col justify-between hover:border-slate-800/80 transition-all duration-200 group">
+          <div className="bg-red-950/10 border border-red-950/20 p-5 rounded-2xl flex flex-col justify-between hover:border-red-900/20 transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Restoran Ort.
@@ -331,8 +335,8 @@ export default function DashboardPage() {
 
         {/* Detailed Metrics Distributions */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-900 pb-2.5">
+          <div className="bg-red-950/10 border border-red-950/20 p-6 rounded-2xl space-y-4">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider border-b border-red-950/25 pb-2.5">
               Genel Tur ve Rehber Performansı Dağılımı
             </h2>
 
@@ -341,17 +345,16 @@ export default function DashboardPage() {
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-slate-400">Tur Memnuniyeti Dağılımı</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-slate-950 rounded-full h-3.5 overflow-hidden flex">
+                  <div className="flex-grow bg-black/40 rounded-full h-3.5 overflow-hidden flex">
                     {data.distributions.tourSatisfaction.map((count, index) => {
                       const total = data.distributions.tourSatisfaction.reduce((a, b) => a + b, 0);
                       const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      // Star ratings index 0 is 1 star, up to index 4 which is 5 stars
-                      const bgColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
+                      const bgColors = ['bg-red-600', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
                       return widthPct > 0 ? (
                         <div
                           key={index}
                           style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-slate-950/20`}
+                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-black/20`}
                           title={`${index + 1} Yıldız: ${count} Kişi`}
                         />
                       ) : null;
@@ -364,16 +367,16 @@ export default function DashboardPage() {
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-slate-400">Rehberlik Memnuniyeti Dağılımı</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-slate-950 rounded-full h-3.5 overflow-hidden flex">
+                  <div className="flex-grow bg-black/40 rounded-full h-3.5 overflow-hidden flex">
                     {data.distributions.guidePerformance.map((count, index) => {
                       const total = data.distributions.guidePerformance.reduce((a, b) => a + b, 0);
                       const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
+                      const bgColors = ['bg-red-600', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
                       return widthPct > 0 ? (
                         <div
                           key={index}
                           style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-slate-950/20`}
+                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-black/20`}
                           title={`${index + 1} Yıldız: ${count} Kişi`}
                         />
                       ) : null;
@@ -388,14 +391,14 @@ export default function DashboardPage() {
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500" /> 4 Yıldız (İyi)</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-500" /> 3 Yıldız (Orta)</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-500" /> 2 Yıldız (Zayıf)</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500" /> 1 Yıldız (Çok Kötü)</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-600" /> 1 Yıldız (Çok Kötü)</span>
               </div>
             </div>
           </div>
 
           {/* Accommodation & Catering Distributions */}
-          <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-2xl space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-900 pb-2.5">
+          <div className="bg-red-950/10 border border-red-950/20 p-6 rounded-2xl space-y-4">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider border-b border-red-950/25 pb-2.5">
               Otel & Restoran Değerlendirmeleri Dağılımı
             </h2>
 
@@ -404,16 +407,16 @@ export default function DashboardPage() {
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-slate-400">Otel Memnuniyeti Dağılımı</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-slate-950 rounded-full h-3.5 overflow-hidden flex">
+                  <div className="flex-grow bg-black/40 rounded-full h-3.5 overflow-hidden flex">
                     {data.distributions.hotelSatisfaction.map((count, index) => {
                       const total = data.distributions.hotelSatisfaction.reduce((a, b) => a + b, 0);
                       const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
+                      const bgColors = ['bg-red-600', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
                       return widthPct > 0 ? (
                         <div
                           key={index}
                           style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-slate-950/20`}
+                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-black/20`}
                           title={`${index + 1} Yıldız: ${count} Kişi`}
                         />
                       ) : null;
@@ -426,16 +429,16 @@ export default function DashboardPage() {
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-slate-400">Yemek/Restoran Memnuniyeti Dağılımı</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-slate-950 rounded-full h-3.5 overflow-hidden flex">
+                  <div className="flex-grow bg-black/40 rounded-full h-3.5 overflow-hidden flex">
                     {data.distributions.restaurantSatisfaction.map((count, index) => {
                       const total = data.distributions.restaurantSatisfaction.reduce((a, b) => a + b, 0);
                       const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
+                      const bgColors = ['bg-red-600', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-500'];
                       return widthPct > 0 ? (
                         <div
                           key={index}
                           style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-slate-950/20`}
+                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-black/20`}
                           title={`${index + 1} Yıldız: ${count} Kişi`}
                         />
                       ) : null;
@@ -450,15 +453,15 @@ export default function DashboardPage() {
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500" /> 4 Yıldız</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-500" /> 3 Yıldız</span>
                 <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-500" /> 2 Yıldız</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500" /> 1 Yıldız</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-600" /> 1 Yıldız</span>
               </div>
             </div>
           </div>
         </section>
 
         {/* Filters and Search Bar */}
-        <section className="bg-slate-900/30 border border-slate-900 rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-900 pb-3">
+        <section className="bg-red-950/10 border border-red-950/20 rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-red-950/25 pb-3">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Filter className="w-4 h-4 text-amber-500" /> Filtreler & Arama
             </h2>
@@ -471,13 +474,13 @@ export default function DashboardPage() {
             
             {/* Text Search */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-600" />
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-650" />
               <input
                 type="text"
                 placeholder="Yolcu adı, Rezervasyon veya Tur adı..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-950/60 border border-slate-850 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all"
+                className="w-full bg-black/40 border border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-650 focus:outline-none focus:ring-4 transition-all"
               />
             </div>
 
@@ -486,11 +489,11 @@ export default function DashboardPage() {
               <select
                 value={selectedTour}
                 onChange={(e) => setSelectedTour(e.target.value)}
-                className="w-full bg-slate-950/60 border border-slate-850 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl px-3.5 py-2 text-sm text-slate-300 focus:outline-none focus:ring-4 transition-all"
+                className="w-full bg-black/40 border border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl px-3.5 py-2 text-sm text-slate-300 focus:outline-none focus:ring-4 transition-all"
               >
-                <option value="all">Tüm Turlar</option>
+                <option value="all" className="bg-[#0c0103]">Tüm Turlar</option>
                 {uniqueTours.filter(t => t !== 'all').map((tour) => (
-                  <option key={tour} value={tour}>
+                  <option key={tour} value={tour} className="bg-[#0c0103]">
                     {tour}
                   </option>
                 ))}
@@ -502,13 +505,13 @@ export default function DashboardPage() {
               <select
                 value={minRatingFilter}
                 onChange={(e) => setMinRatingFilter(Number(e.target.value))}
-                className="w-full bg-slate-950/60 border border-slate-850 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl px-3.5 py-2 text-sm text-slate-300 focus:outline-none focus:ring-4 transition-all"
+                className="w-full bg-black/40 border border-red-950/60 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl px-3.5 py-2 text-sm text-slate-300 focus:outline-none focus:ring-4 transition-all"
               >
-                <option value={0}>Tüm Derecelendirmeler</option>
-                <option value={4.5}>4.5 Yıldız ve Üzeri (Çok İyi)</option>
-                <option value={4}>4.0 Yıldız ve Üzeri (İyi)</option>
-                <option value={3}>3.0 Yıldız ve Üzeri (Orta)</option>
-                <option value={1}>3.0 Yıldız Altı (Kritik Bildirimler)</option>
+                <option value={0} className="bg-[#0c0103]">Tüm Derecelendirmeler</option>
+                <option value={4.5} className="bg-[#0c0103]">4.5 Yıldız ve Üzeri (Çok İyi)</option>
+                <option value={4} className="bg-[#0c0103]">4.0 Yıldız ve Üzeri (İyi)</option>
+                <option value={3} className="bg-[#0c0103]">3.0 Yıldız ve Üzeri (Orta)</option>
+                <option value={1} className="bg-[#0c0103]">3.0 Yıldız Altı (Kritik Bildirimler)</option>
               </select>
             </div>
 
@@ -516,11 +519,11 @@ export default function DashboardPage() {
         </section>
 
         {/* Results Feedback Table */}
-        <section className="bg-slate-900/30 border border-slate-900 rounded-2xl overflow-hidden shadow-xl">
+        <section className="bg-red-950/10 border border-red-950/20 rounded-2xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950 border-b border-slate-900 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-[#100103] border-b border-red-950/40 text-xs font-bold text-slate-400 uppercase tracking-wider">
                   <th className="p-4 pl-6">Yolcu / Rezervasyon</th>
                   <th className="p-4">Tur Programı</th>
                   <th className="p-4">Ortalama / Detay Puanlar</th>
@@ -528,7 +531,7 @@ export default function DashboardPage() {
                   <th className="p-4 pr-6">Görüşler</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-900/50">
+              <tbody className="divide-y divide-red-950/10">
                 {filteredFeedbacks.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-500 text-sm">
@@ -546,14 +549,14 @@ export default function DashboardPage() {
                     return (
                       <tr
                         key={fb.id}
-                        className="hover:bg-slate-950/40 transition-colors group text-sm"
+                        className="hover:bg-[#150206] transition-colors group text-sm"
                       >
                         {/* Passenger Details */}
                         <td className="p-4 pl-6 space-y-1">
                           <span className="font-semibold text-white block group-hover:text-amber-400 transition-colors">
                             {fb.passengerName}
                           </span>
-                          <span className="text-xs text-slate-500 font-mono bg-slate-950 border border-slate-850 px-2 py-0.5 rounded inline-block">
+                          <span className="text-xs text-slate-500 font-mono bg-black/45 border border-red-950/40 px-2 py-0.5 rounded inline-block">
                             {fb.reservationNo}
                           </span>
                         </td>
@@ -582,7 +585,7 @@ export default function DashboardPage() {
                         {/* Submission Date */}
                         <td className="p-4 text-slate-500 text-xs shrink-0 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-slate-600" />
+                            <Calendar className="w-3.5 h-3.5 text-slate-650" />
                             {new Date(fb.createdAt).toLocaleDateString('tr-TR', {
                               year: 'numeric',
                               month: 'short',
@@ -594,9 +597,9 @@ export default function DashboardPage() {
                         {/* Additional Comments */}
                         <td className="p-4 pr-6">
                           {fb.additionalComments ? (
-                            <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-900/60 text-slate-300 text-xs italic max-w-sm line-clamp-3 hover:line-clamp-none transition-all cursor-pointer leading-relaxed relative group/comment">
+                            <div className="p-2.5 rounded-xl bg-black/35 border border-red-950/20 text-slate-300 text-xs italic max-w-sm line-clamp-3 hover:line-clamp-none transition-all cursor-pointer leading-relaxed relative group/comment">
                               "{fb.additionalComments}"
-                              <MessageSquare className="w-3 h-3 text-slate-600 absolute right-2 bottom-2 opacity-0 group-hover/comment:opacity-100 transition-opacity" />
+                              <MessageSquare className="w-3 h-3 text-slate-650 absolute right-2 bottom-2 opacity-0 group-hover/comment:opacity-100 transition-opacity" />
                             </div>
                           ) : (
                             <span className="text-slate-600 text-xs italic">Yorum yok</span>
@@ -613,7 +616,7 @@ export default function DashboardPage() {
 
       </main>
 
-      <footer className="text-center py-10 text-xs text-slate-600 border-t border-slate-950 mt-10">
+      <footer className="text-center py-10 text-xs text-slate-650 border-t border-red-950/20 mt-10">
         © {new Date().getFullYear()} Ejder Turizm Admin Analiz Portalı. Tüm hakları saklıdır.
       </footer>
     </div>
