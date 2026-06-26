@@ -28,7 +28,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
     return { success: false, error: 'Resend API key is missing' };
   }
 
-  // Calculate overall average satisfaction (5 metrics now)
+  // Calculate overall average satisfaction (5 metrics)
   const avg = (
     (feedback.tourSatisfaction +
       feedback.guidePerformance +
@@ -173,7 +173,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
         <!-- Header -->
         <div class="header">
           <h1>Yeni Tur Memnuniyet Formu</h1>
-          <p>Ejder Turizm Müşteri İlişkileri Bildirimi</p>
+          <p>Ejder Turizm Müşteri İlişkileri Değerlendirmesi</p>
         </div>
 
         <!-- Content -->
@@ -188,15 +188,15 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
               </tr>
               <tr>
                 <td class="info-label">E-posta Adresi:</td>
-                <td class="info-value">${feedback.email}</td>
+                <td class="info-value">${feedback.email || 'Belirtilmedi'}</td>
               </tr>
               <tr>
                 <td class="info-label">Rezervasyon No:</td>
-                <td class="info-value"><strong>${feedback.reservationNo}</strong></td>
+                <td class="info-value"><strong>${feedback.reservationNo || 'Belirtilmedi'}</strong></td>
               </tr>
               <tr>
                 <td class="info-label">Tur Adı:</td>
-                <td class="info-value">${feedback.tourName}</td>
+                <td class="info-value">${feedback.tourName || 'Belirtilmedi'}</td>
               </tr>
               <tr>
                 <td class="info-label">Gönderim Tarihi:</td>
@@ -265,7 +265,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
     const data = await resend.emails.send({
       from: `Ejder Turizm <${fromEmail}>`,
       to: [toEmail],
-      subject: `Yeni Tur Anketi: ${feedback.passengerName} - ${feedback.tourName}`,
+      subject: `Yeni Tur Anketi: ${feedback.passengerName} - ${feedback.tourName || 'Genel'}`,
       html: emailHtml,
     });
     console.log('📬 Notification email sent successfully via Resend:', data);

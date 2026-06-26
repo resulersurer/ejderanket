@@ -9,9 +9,9 @@ generator client {
 model Feedback {
   id                         String   @id @default(uuid())
   passengerName              String   @map("passenger_name")
-  email                      String   @map("email")
-  tourName                   String   @map("tour_name")
-  reservationNo              String   @unique @map("reservation_no")
+  email                      String?  @map("email")
+  tourName                   String?  @map("tour_name")
+  reservationNo              String?  @unique @map("reservation_no")
   tourSatisfaction           Int      @map("tour_satisfaction")
   guidePerformance           Int      @map("guide_performance")
   hotelSatisfaction          Int      @map("hotel_satisfaction")

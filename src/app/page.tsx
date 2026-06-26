@@ -108,19 +108,11 @@ export default function SurveyPage() {
       newErrors.passengerName = 'Yolcu adı en az 2 karakter olmalıdır.';
     }
 
-    if (!form.email.trim()) {
-      newErrors.email = 'E-posta adresi gereklidir.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       newErrors.email = 'Geçerli bir e-posta adresi giriniz.';
     }
 
-    if (!form.tourName.trim()) {
-      newErrors.tourName = 'Tur adı gereklidir.';
-    }
-
-    if (!form.reservationNo.trim()) {
-      newErrors.reservationNo = 'Rezervasyon numarası gereklidir.';
-    } else if (!/^[a-zA-Z0-9\-\s]+$/.test(form.reservationNo.trim())) {
+    if (form.reservationNo.trim() && !/^[a-zA-Z0-9\-\s]+$/.test(form.reservationNo.trim())) {
       newErrors.reservationNo = 'Rezervasyon numarası yalnızca harf, rakam ve tire içerebilir.';
     }
 
@@ -241,7 +233,7 @@ export default function SurveyPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {serverError && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-red-55 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
                   <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                   <span>{serverError}</span>
                 </div>
@@ -254,85 +246,85 @@ export default function SurveyPage() {
                 </h3>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {/* Name Input */}
+                  {/* Name Input (REQUIRED) */}
                   <div id="passengerName">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Adınız Soyadınız <span className="text-red-650 font-bold">*</span>
+                      Adınız Soyadınız <span className="text-red-655 font-bold">*</span>
                     </label>
                     <input
                       type="text"
                       name="passengerName"
                       value={form.passengerName}
                       onChange={handleInputChange}
-                      placeholder="Örn. Ahmet Yılmaz"
+                      placeholder="Ahmet Yılmaz"
                       className={`w-full bg-white border ${
                         errors.passengerName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
                       } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.passengerName && (
-                      <p className="mt-1 text-xs text-red-600">{errors.passengerName}</p>
+                      <p className="mt-1 text-xs text-red-650">{errors.passengerName}</p>
                     )}
                   </div>
 
-                  {/* Email Input */}
+                  {/* Email Input (OPTIONAL) */}
                   <div id="email">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      E-posta Adresiniz <span className="text-red-650 font-bold">*</span>
+                      E-posta Adresiniz
                     </label>
                     <input
                       type="text"
                       name="email"
                       value={form.email}
                       onChange={handleInputChange}
-                      placeholder="Örn. ahmet@ejderturizm.com"
+                      placeholder="ahmet@ejderturizm.com"
                       className={`w-full bg-white border ${
                         errors.email ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
                       } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.email && (
-                      <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                      <p className="mt-1 text-xs text-red-650">{errors.email}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {/* Reservation No */}
+                  {/* Reservation No (OPTIONAL) */}
                   <div id="reservationNo">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Rezervasyon Numarası <span className="text-red-655 font-bold">*</span>
+                      Rezervasyon Numarası
                     </label>
                     <input
                       type="text"
                       name="reservationNo"
                       value={form.reservationNo}
                       onChange={handleInputChange}
-                      placeholder="Örn. EJ-1234-A"
+                      placeholder="EJ-1234-A"
                       className={`w-full bg-white border ${
                         errors.reservationNo ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
                       } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.reservationNo && (
-                      <p className="mt-1 text-xs text-red-600">{errors.reservationNo}</p>
+                      <p className="mt-1 text-xs text-red-650">{errors.reservationNo}</p>
                     )}
                   </div>
 
-                  {/* Tour Name */}
+                  {/* Tour Name (OPTIONAL) */}
                   <div id="tourName">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Katıldığınız Tur Programı <span className="text-red-655 font-bold">*</span>
+                      Katıldığınız Tur Programı
                     </label>
                     <input
                       type="text"
                       name="tourName"
                       value={form.tourName}
                       onChange={handleInputChange}
-                      placeholder="Örn. Klasik İtalya Turu"
+                      placeholder="Klasik İtalya Turu"
                       className={`w-full bg-white border ${
                         errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
                       } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.tourName && (
-                      <p className="mt-1 text-xs text-red-600">{errors.tourName}</p>
+                      <p className="mt-1 text-xs text-red-650">{errors.tourName}</p>
                     )}
                   </div>
                 </div>
@@ -433,7 +425,7 @@ export default function SurveyPage() {
                   <>
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns="http://www.w3.org/2050/svg"
                       fill="none"
                       viewBox="0 0 24 24"
                     >

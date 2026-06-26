@@ -9,19 +9,22 @@ export const feedbackSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, 'E-posta adresi zorunludur.')
-    .email('Geçerli bir e-posta adresi giriniz.'),
+    .email('Geçerli bir e-posta adresi giriniz.')
+    .optional()
+    .or(z.literal('')),
   tourName: z
     .string()
     .trim()
-    .min(2, 'Tur adı en az 2 karakter olmalıdır.')
-    .max(150, 'Tur adı en fazla 150 karakter olmalıdır.'),
+    .max(150, 'Tur adı en fazla 150 karakter olabilir.')
+    .optional()
+    .or(z.literal('')),
   reservationNo: z
     .string()
     .trim()
-    .min(3, 'Rezervasyon numarası en az 3 karakter olmalıdır.')
-    .max(50, 'Rezervasyon numarası en fazla 50 karakter olmalıdır.')
-    .regex(/^[a-zA-Z0-9\-\s]+$/, 'Rezervasyon numarası yalnızca harf, rakam ve tire içerebilir.'),
+    .max(50, 'Rezervasyon numarası en fazla 50 karakter olabilir.')
+    .regex(/^[a-zA-Z0-9\-\s]+$/, 'Rezervasyon numarası yalnızca harf, rakam ve tire içerebilir.')
+    .optional()
+    .or(z.literal('')),
   tourSatisfaction: z
     .coerce
     .number()

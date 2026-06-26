@@ -41,25 +41,27 @@ export async function submitFeedbackAction(rawData: any) {
       };
     }
 
-    // 3. Check if reservation number already exists to avoid duplicates
-    const existingFeedback = await prisma.feedback.findUnique({
-      where: { reservationNo: feedbackData.reservationNo },
-    });
+    // 3. Check if reservation number already exists to avoid duplicates (only if reservationNo is provided)
+    if (feedbackData.reservationNo && feedbackData.reservationNo.trim()) {
+      const existingFeedback = await prisma.feedback.findUnique({
+        where: { reservationNo: feedbackData.reservationNo },
+      });
 
-    if (existingFeedback) {
-      return {
-        success: false,
-        error: 'Bu rezervasyon numarasıyla daha önce bir memnuniyet anketi doldurulmuş.',
-      };
+      if (existingFeedback) {
+        return {
+          success: false,
+          error: 'Bu rezervasyon numarasıyla daha önce bir memnuniyet anketi doldurulmuş.',
+        };
+      }
     }
 
     // 4. Save feedback in the PostgreSQL Database
     const savedFeedback = await prisma.feedback.create({
       data: {
         passengerName: feedbackData.passengerName,
-        email: feedbackData.email,
-        tourName: feedbackData.tourName,
-        reservationNo: feedbackData.reservationNo,
+        email: feedbackData.email || null,
+        tourName: feedbackData.tourName || null,
+        reservationNo: feedbackData.reservationNo || null,
         tourSatisfaction: feedbackData.tourSatisfaction,
         guidePerformance: feedbackData.guidePerformance,
         hotelSatisfaction: feedbackData.hotelSatisfaction,
