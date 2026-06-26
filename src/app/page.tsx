@@ -191,7 +191,7 @@ export default function SurveyPage() {
           Tur Deneyiminizi Değerlendirin
         </h1>
         <p className="mt-3 text-sm text-slate-500 max-w-sm mx-auto">
-          Ejder Turizm seyahatinizin kalitesini analiz edebilmemiz için geri bildiriminiz bizim için çok değerlidir.
+          Ejder Turizm'e katılmış olduğunuz tur ile ilgili deneyiminizi analiz edebilmemiz için geri bildiriminiz bizim için çok değerlidir.
         </p>
       </header>
 
