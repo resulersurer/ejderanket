@@ -85,6 +85,7 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    document.title = "Ejder Turizm | Yönetim Paneli";
     fetchDashboardData();
   }, []);
 
