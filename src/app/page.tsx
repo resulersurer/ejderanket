@@ -256,13 +256,12 @@ export default function SurveyPage() {
                       name="passengerName"
                       value={form.passengerName}
                       onChange={handleInputChange}
-                      placeholder="Ahmet Yılmaz"
                       className={`w-full bg-white border ${
                         errors.passengerName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.passengerName && (
-                      <p className="mt-1 text-xs text-red-650">{errors.passengerName}</p>
+                      <p className="mt-1 text-xs text-red-655">{errors.passengerName}</p>
                     )}
                   </div>
 
@@ -276,13 +275,12 @@ export default function SurveyPage() {
                       name="email"
                       value={form.email}
                       onChange={handleInputChange}
-                      placeholder="ahmet@ejderturizm.com"
                       className={`w-full bg-white border ${
                         errors.email ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.email && (
-                      <p className="mt-1 text-xs text-red-650">{errors.email}</p>
+                      <p className="mt-1 text-xs text-red-655">{errors.email}</p>
                     )}
                   </div>
                 </div>
@@ -298,13 +296,12 @@ export default function SurveyPage() {
                       name="reservationNo"
                       value={form.reservationNo}
                       onChange={handleInputChange}
-                      placeholder="EJ-1234-A"
                       className={`w-full bg-white border ${
                         errors.reservationNo ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.reservationNo && (
-                      <p className="mt-1 text-xs text-red-650">{errors.reservationNo}</p>
+                      <p className="mt-1 text-xs text-red-655">{errors.reservationNo}</p>
                     )}
                   </div>
 
@@ -318,13 +315,12 @@ export default function SurveyPage() {
                       name="tourName"
                       value={form.tourName}
                       onChange={handleInputChange}
-                      placeholder="Klasik İtalya Turu"
                       className={`w-full bg-white border ${
                         errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.tourName && (
-                      <p className="mt-1 text-xs text-red-650">{errors.tourName}</p>
+                      <p className="mt-1 text-xs text-red-655">{errors.tourName}</p>
                     )}
                   </div>
                 </div>
@@ -387,7 +383,7 @@ export default function SurveyPage() {
                             })}
                           </div>
                         </div>
-                        {errorMsg && <p className="text-xs text-red-650 mt-1">{errorMsg}</p>}
+                        {errorMsg && <p className="text-xs text-red-655 mt-1">{errorMsg}</p>}
                       </div>
                     );
                   })}
@@ -405,9 +401,8 @@ export default function SurveyPage() {
                     name="additionalComments"
                     value={form.additionalComments}
                     onChange={handleInputChange}
-                    placeholder="Oteller, rehberlik, yemekler veya eklemek istediğiniz diğer detaylar hakkında görüşlerinizi bizimle paylaşın..."
                     rows={4}
-                    className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 resize-y min-h-[90px] shadow-sm"
+                    className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 resize-y min-h-[90px] shadow-sm"
                   />
                   {errors.additionalComments && (
                     <p className="mt-1 text-xs text-red-655">{errors.additionalComments}</p>
@@ -425,7 +420,7 @@ export default function SurveyPage() {
                   <>
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2050/svg"
+                      xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
                     >
