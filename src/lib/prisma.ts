@@ -14,7 +14,7 @@ const prismaClientSingleton = () => {
   // In Prisma 7, we MUST pass an adapter. If DATABASE_URL is not set yet,
   // we use a dummy connection string to construct the client without errors.
   if (!databaseUrl || databaseUrl.includes('username:password') || databaseUrl.includes('ep-xxxx')) {
-    databaseUrl = 'postgresql://dummy:dummy@localhost:5432/dummy';
+    databaseUrl = 'postgresql://dummy:dummy@ep-dummy-123456.us-east-1.aws.neon.tech/neondb';
   }
 
   const pool = new Pool({ connectionString: databaseUrl });
