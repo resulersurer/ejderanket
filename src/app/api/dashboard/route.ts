@@ -87,8 +87,8 @@ export async function GET() {
       return NextResponse.json(computeStats([], false));
     }
 
-    // Map Prisma snake_case model to camelCase keys for frontend compatibility
-    const mappedFeedbacks = feedbacks.map((f) => ({
+        // Map Prisma snake_case model to camelCase keys for frontend compatibility
+    const mappedFeedbacks = feedbacks.map((f: any) => ({
       id: f.id,
       passengerName: f.passengerName,
       tourName: f.tourName,
