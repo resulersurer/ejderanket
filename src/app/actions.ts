@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function submitFeedbackAction(rawData: any) {
   try {
-    // 1. Validate form fields using Zod schema
+    // 1. Form alanlarını Zod şemasıyla doğrula
     const result = feedbackSchema.safeParse(rawData);
 
     if (!result.success) {
@@ -26,35 +26,7 @@ export async function submitFeedbackAction(rawData: any) {
 
     const feedbackData: FeedbackInput = result.data;
 
-    // 2. Check if the database connection URL is configured before running database queries
-    const dbUrl = process.env.DATABASE_URL;
-    console.log('DEBUG: DATABASE_URL is:', typeof dbUrl, JSON.stringify(dbUrl));
-
-    const isDbConfigured =
-      dbUrl &&
-      dbUrl.trim() !== '' &&
-      dbUrl !== 'undefined' &&
-      dbUrl !== 'null' &&
-      (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://')) &&
-      !dbUrl.includes('username:password') &&
-      !dbUrl.includes('ep-xxxx') &&
-      !dbUrl.includes('ep-dummy-123456');
-
-    if (!isDbConfigured) {
-      console.error('❌ DATABASE_URL is not set or invalid. Saving data will fail.');
-      console.warn('⚠️ Simulating successful save for demonstration purposes.');
-      
-      // Attempt to send email even if DB is skipped
-      await sendFeedbackNotification(feedbackData);
-      
-      return {
-        success: true,
-        simulated: true,
-        message: 'Geri bildirim başarıyla alındı (Simüle edildi - DB Bağlı Değil).',
-      };
-    }
-
-    // 3. Check if reservation number already exists to avoid duplicates (only if reservationNo is provided)
+    // 2. Daha önce aynı rezervasyon numarasıyla anket doldurulmuş mu kontrol et
     if (feedbackData.reservationNo && feedbackData.reservationNo.trim()) {
       const existingFeedback = await prisma.feedback.findUnique({
         where: { reservationNo: feedbackData.reservationNo },
@@ -68,7 +40,7 @@ export async function submitFeedbackAction(rawData: any) {
       }
     }
 
-    // 4. Save feedback in the PostgreSQL Database
+    // 3. Geri bildirimi PostgreSQL veritabanına kaydet
     const savedFeedback = await prisma.feedback.create({
       data: {
         passengerName: feedbackData.passengerName,
@@ -84,16 +56,16 @@ export async function submitFeedbackAction(rawData: any) {
       },
     });
 
-    console.log('📝 Feedback successfully saved to database:', savedFeedback.id);
+    console.log('📝 Geri bildirim veritabanına kaydedildi:', savedFeedback.id);
 
-    // 5. Send Email Notification via SMTP (async - does not block saving DB response)
+    // 4. E-posta bildirimi gönder (DB kaydını engellemez)
     try {
       await sendFeedbackNotification(feedbackData);
     } catch (mailErr) {
-      console.error('⚠️ Database save succeeded but SMTP email dispatch failed:', mailErr);
+      console.error('⚠️ Veritabanı kaydı başarılı ama SMTP e-posta gönderilemedi:', mailErr);
     }
 
-    // 6. Revalidate the dashboard cache
+    // 5. Dashboard cache'ini yenile
     revalidatePath('/dashboard');
 
     return {
@@ -101,7 +73,7 @@ export async function submitFeedbackAction(rawData: any) {
       message: 'Geri bildiriminiz başarıyla iletildi. Katılımınız için teşekkür ederiz!',
     };
   } catch (err: any) {
-    console.error('❌ Server Action submitFeedbackAction failed:', err);
+    console.error('❌ submitFeedbackAction hata verdi:', err);
     return {
       success: false,
       error: err.message || 'Geri bildirim kaydedilirken beklenmedik bir sunucu hatası oluştu.',

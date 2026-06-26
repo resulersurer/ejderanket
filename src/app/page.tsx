@@ -37,7 +37,6 @@ export default function SurveyPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [simulatedMode, setSimulatedMode] = useState(false);
 
   // Hover states for rating categories
   const [hovers, setHovers] = useState({
@@ -148,7 +147,6 @@ export default function SurveyPage() {
     if (res.success) {
       setSubmitSuccess(true);
       setSuccessMessage(res.message || 'Geri bildiriminiz başarıyla kaydedildi.');
-      setSimulatedMode(!!res.simulated);
       setForm(initialFormState);
     } else {
       if (res.fieldErrors) {
@@ -212,14 +210,8 @@ export default function SurveyPage() {
                 {successMessage}
               </p>
 
-              {simulatedMode && (
-                <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed max-w-xs mx-auto text-left flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Demo Modu:</strong> DATABASE_URL ayarlanmadığı için bu gönderim simüle edilmiş ve veritabanına kaydedilmemiştir. Ancak e-posta gönderimi tetiklenmiştir.
-                  </span>
-                </div>
-              )}
+
+
 
               <button
                 onClick={() => setSubmitSuccess(false)}
