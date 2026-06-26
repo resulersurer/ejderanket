@@ -36,12 +36,8 @@ const prismaClientSingleton = () => {
       parsedUrl.searchParams.delete('channel_binding');
       databaseUrl = parsedUrl.toString();
 
-      // Populate standard PG env variables to prevent parser/bundler bugs in the serverless driver connection check
+      // Populate process.env.PGHOST to prevent parser/bundler bugs in the serverless driver connection check
       process.env.PGHOST = parsedUrl.hostname;
-      process.env.PGUSER = parsedUrl.username;
-      process.env.PGDATABASE = parsedUrl.pathname.substring(1);
-      process.env.PGPASSWORD = parsedUrl.password;
-      process.env.PGPORT = parsedUrl.port || '5432';
     } catch (e) {
       console.warn('⚠️ Failed to parse databaseUrl using URL API:', e);
     }
