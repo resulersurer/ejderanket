@@ -73,11 +73,11 @@ export async function submitFeedbackAction(rawData: any) {
 
     console.log('📝 Feedback successfully saved to database:', savedFeedback.id);
 
-    // 5. Send Email Notification via Resend (async - does not block saving DB response)
+    // 5. Send Email Notification via SMTP (async - does not block saving DB response)
     try {
       await sendFeedbackNotification(feedbackData);
     } catch (mailErr) {
-      console.error('⚠️ Database save succeeded but Resend email dispatch failed:', mailErr);
+      console.error('⚠️ Database save succeeded but SMTP email dispatch failed:', mailErr);
     }
 
     // 6. Revalidate the dashboard cache

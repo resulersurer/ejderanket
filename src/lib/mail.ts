@@ -1,9 +1,23 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { FeedbackInput } from './validations/feedback';
 
-// Initialize Resend client only if API key is provided
-const resendApiKey = process.env.RESEND_API_KEY;
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
+// Initialize SMTP transporter
+const smtpHost = process.env.SMTP_HOST || 'smtp.yandex.com.tr';
+const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+const smtpUser = process.env.SMTP_USER || 'bilgi@ejderturizm.com.tr';
+const smtpPass = process.env.SMTP_PASS;
+
+const transporter = smtpPass
+  ? nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465, // SSL
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+    })
+  : null;
 
 // Helper to render score stars or color badge for HTML email
 function getScoreBadge(score: number): string {
@@ -23,9 +37,9 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
   const toEmail = process.env.NOTIFICATION_EMAIL || 'musteridestek@ejderturizm.com.tr';
   const fromEmail = process.env.SENDER_EMAIL || 'bilgi@ejderturizm.com.tr';
 
-  if (!resend) {
-    console.warn('⚠️ RESEND_API_KEY is not set. Skipping email notification dispatch.');
-    return { success: false, error: 'Resend API key is missing' };
+  if (!transporter) {
+    console.warn('⚠️ SMTP_PASS is not set. Skipping email notification dispatch.');
+    return { success: false, error: 'SMTP password is missing' };
   }
 
   // Calculate overall average satisfaction (5 metrics)
@@ -262,16 +276,16 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
   `;
 
   try {
-    const data = await resend.emails.send({
-      from: `Ejder Turizm <${fromEmail}>`,
-      to: [toEmail],
+    const info = await transporter.sendMail({
+      from: `"Ejder Turizm" <${fromEmail}>`,
+      to: toEmail,
       subject: `Yeni Tur Anketi: ${feedback.passengerName} - ${feedback.tourName || 'Genel'}`,
       html: emailHtml,
     });
-    console.log('📬 Notification email sent successfully via Resend:', data);
-    return { success: true, data };
+    console.log('📬 Notification email sent successfully via SMTP:', info.messageId);
+    return { success: true, data: info };
   } catch (error) {
-    console.error('❌ Failed to send email via Resend:', error);
+    console.error('❌ Failed to send email via SMTP:', error);
     return { success: false, error };
   }
 }

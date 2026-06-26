@@ -216,7 +216,7 @@ export default function SurveyPage() {
                 <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed max-w-xs mx-auto text-left flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Demo Modu:</strong> DATABASE_URL ayarlanmadığı için bu gönderim simüle edilmiş ve veritabanına kaydedilmemiştir. Ancak Resend mail gönderimi tetiklenmiştir.
+                    <strong>Demo Modu:</strong> DATABASE_URL ayarlanmadığı için bu gönderim simüle edilmiş ve veritabanına kaydedilmemiştir. Ancak e-posta gönderimi tetiklenmiştir.
                   </span>
                 </div>
               )}
