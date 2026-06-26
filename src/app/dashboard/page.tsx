@@ -132,7 +132,7 @@ function DistributionBar({ distribution, label }: { distribution: number[]; labe
           return (
             <div key={i} className="flex-1 text-center">
               <div className="text-[9px] font-bold" style={{ color: SCORE_COLORS[i] }}>{count}</div>
-              <div className="text-[8px] text-white/25">{i + 1}★</div>
+              <div className="text-[8px] text-slate-400">{i + 1}★</div>
             </div>
           );
         })}
@@ -182,7 +182,7 @@ export default function DashboardPage() {
             <div className="w-16 h-16 rounded-full border-2 border-red-500/30 border-t-red-500 animate-spin" />
             <img src="/ejder-logo.png" alt="Logo" className="absolute inset-0 m-auto w-8 h-8 rounded-md object-cover" />
           </div>
-          <p className="text-white/50 text-sm font-medium tracking-wider">Veriler yükleniyor…</p>
+          <p className="text-slate-500 text-sm font-medium tracking-wider">Veriler yükleniyor…</p>
         </div>
       </div>
     );
@@ -192,9 +192,9 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen dashboard-bg flex items-center justify-center p-6">
         <div className="glass-card max-w-sm w-full p-8 text-center space-y-4">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
-          <h2 className="text-white font-bold text-lg">Veriler Yüklenemedi</h2>
-          <p className="text-white/50 text-sm">{error || 'Beklenmedik bir hata oluştu.'}</p>
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-slate-900 font-bold text-lg">Veriler Yüklenemedi</h2>
+          <p className="text-slate-500 text-sm">{error || 'Beklenmedik bir hata oluştu.'}</p>
           <button
             onClick={() => { setLoading(true); fetchDashboardData(); }}
             className="btn-primary w-full"
@@ -251,50 +251,51 @@ export default function DashboardPage() {
     <>
       <style>{`
         .dashboard-bg {
-          background: #0a0a0f;
+          background: #f4f5f7;
           background-image:
-            radial-gradient(ellipse 80% 50% at 20% -10%, rgba(122,0,6,0.25) 0%, transparent 60%),
-            radial-gradient(ellipse 60% 40% at 80% 110%, rgba(99,102,241,0.12) 0%, transparent 60%);
+            radial-gradient(ellipse 70% 40% at 10% 0%, rgba(122,0,6,0.07) 0%, transparent 60%),
+            radial-gradient(ellipse 50% 40% at 90% 100%, rgba(99,102,241,0.06) 0%, transparent 60%);
           min-height: 100vh;
         }
         .glass-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
           border-radius: 16px;
-          backdrop-filter: blur(12px);
+          box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
         }
         .glass-card-hover {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
           border-radius: 16px;
-          backdrop-filter: blur(12px);
+          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
           transition: all 0.2s ease;
         }
         .glass-card-hover:hover {
-          background: rgba(255,255,255,0.07);
-          border-color: rgba(255,255,255,0.14);
+          border-color: #d1d5db;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
           transform: translateY(-1px);
         }
         .stat-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
           border-radius: 20px;
           padding: 24px;
           transition: all 0.25s ease;
           position: relative;
           overflow: hidden;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.03);
         }
         .stat-card::before {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+          background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 60%);
           pointer-events: none;
         }
         .stat-card:hover {
-          border-color: rgba(255,255,255,0.16);
+          border-color: #d1d5db;
           transform: translateY(-2px);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
         .btn-primary {
           display: inline-flex;
@@ -310,52 +311,54 @@ export default function DashboardPage() {
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 20px rgba(122,0,6,0.4);
+          box-shadow: 0 4px 16px rgba(122,0,6,0.3);
         }
         .btn-primary:hover {
           opacity: 0.9;
           transform: translateY(-1px);
-          box-shadow: 0 8px 30px rgba(122,0,6,0.5);
+          box-shadow: 0 8px 24px rgba(122,0,6,0.4);
         }
         .btn-ghost {
           display: inline-flex;
           align-items: center;
           gap: 6px;
           padding: 8px 14px;
-          background: rgba(255,255,255,0.06);
-          color: rgba(255,255,255,0.7);
+          background: #ffffff;
+          color: #374151;
           border-radius: 10px;
           font-size: 13px;
           font-weight: 500;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid #e5e7eb;
           cursor: pointer;
           transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
         .btn-ghost:hover {
-          background: rgba(255,255,255,0.1);
-          color: white;
+          background: #f9fafb;
+          border-color: #d1d5db;
+          color: #111827;
         }
         .input-dark {
           width: 100%;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
           border-radius: 12px;
           padding: 10px 14px;
-          color: white;
+          color: #111827;
           font-size: 13px;
           outline: none;
           transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .input-dark::placeholder { color: rgba(255,255,255,0.3); }
+        .input-dark::placeholder { color: #9ca3af; }
         .input-dark:focus {
-          border-color: rgba(122,0,6,0.6);
-          background: rgba(255,255,255,0.07);
-          box-shadow: 0 0 0 3px rgba(122,0,6,0.15);
+          border-color: #7a0006;
+          box-shadow: 0 0 0 3px rgba(122,0,6,0.1);
         }
-        .input-dark option { background: #1a1a2e; color: white; }
+        .input-dark option { background: #ffffff; color: #111827; }
         .table-row-expanded {
-          background: rgba(122,0,6,0.06);
-          border-left: 2px solid rgba(122,0,6,0.5);
+          background: rgba(122,0,6,0.03);
+          border-left: 2px solid rgba(122,0,6,0.4);
         }
         .sort-btn { 
           cursor: pointer; 
@@ -365,12 +368,12 @@ export default function DashboardPage() {
           gap: 4px;
           font-size: 11px;
           font-weight: 600;
-          color: rgba(255,255,255,0.4);
+          color: #9ca3af;
           text-transform: uppercase;
           letter-spacing: 0.06em;
           transition: color 0.2s;
         }
-        .sort-btn:hover, .sort-btn.active { color: rgba(255,255,255,0.8); }
+        .sort-btn:hover, .sort-btn.active { color: #374151; }
         .badge {
           display: inline-flex;
           align-items: center;
@@ -391,31 +394,31 @@ export default function DashboardPage() {
         .animate-in-delay-3 { animation: fadeInUp 0.4s ease 0.15s forwards; opacity: 0; }
         .animate-in-delay-4 { animation: fadeInUp 0.4s ease 0.2s forwards; opacity: 0; }
         .scrollbar-dark::-webkit-scrollbar { height: 4px; }
-        .scrollbar-dark::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
-        .scrollbar-dark::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+        .scrollbar-dark::-webkit-scrollbar-track { background: #f3f4f6; }
+        .scrollbar-dark::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
       `}</style>
 
       <div className="dashboard-bg">
 
         {/* ── HEADER ── */}
-        <header className="sticky top-0 z-30 border-b border-white/[0.06]" style={{ background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(20px)' }}>
+        <header className="sticky top-0 z-30 border-b border-slate-200" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)' }}>
           <div className="max-w-[1400px] mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <a href="/" className="btn-ghost p-2" title="Anket Sayfasına Dön">
                 <ArrowLeft className="w-4 h-4" />
               </a>
-              <div className="w-px h-6 bg-white/10" />
-              <img src="/ejder-logo.png" alt="Ejder" className="w-9 h-9 rounded-xl object-cover border border-white/10" />
+              <div className="w-px h-6 bg-slate-200" />
+              <img src="/ejder-logo.png" alt="Ejder" className="w-9 h-9 rounded-xl object-cover border border-slate-200" />
               <div>
-                <div className="text-[9px] font-bold text-red-400 tracking-[0.2em] uppercase">Ejder Turizm</div>
-                <div className="text-sm font-bold text-white leading-none mt-0.5">Müşteri Analiz Paneli</div>
+                <div className="text-[9px] font-bold text-red-700 tracking-[0.2em] uppercase">Ejder Turizm</div>
+                <div className="text-sm font-bold text-slate-900 leading-none mt-0.5">Müşteri Analiz Paneli</div>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold"
-                style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.2)', color: '#34d399' }}>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#059669' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 {data.totalCount} Kayıt
               </div>
               <button
@@ -437,13 +440,13 @@ export default function DashboardPage() {
 
             {/* Overall Score - special card */}
             <div className="col-span-2 sm:col-span-3 lg:col-span-2 stat-card flex items-center gap-6"
-              style={{ background: 'linear-gradient(135deg, rgba(122,0,6,0.3) 0%, rgba(10,10,15,0.8) 100%)', borderColor: 'rgba(122,0,6,0.4)' }}>
+              style={{ background: 'linear-gradient(135deg, #7a0006 0%, #b91c1c 100%)', borderColor: '#991b1b' }}>
               <ScoreGauge value={data.averages.overall} />
               <div>
-                <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Genel Ortalama</div>
-                <div className="text-4xl font-black text-white">{data.averages.overall}<span className="text-lg text-white/30 font-medium">/5</span></div>
+                <div className="text-[10px] font-bold text-red-200/70 uppercase tracking-widest mb-1">Genel Ortalama</div>
+                <div className="text-4xl font-black text-white">{data.averages.overall}<span className="text-lg text-white/50 font-medium">/5</span></div>
                 <StarRow rating={data.averages.overall} size={13} />
-                <div className="mt-2 text-[10px] text-white/40">{data.totalCount} müşteri değerlendirmesi</div>
+                <div className="mt-2 text-[10px] text-red-200/60">{data.totalCount} müşteri değerlendirmesi</div>
               </div>
             </div>
 
@@ -453,13 +456,13 @@ export default function DashboardPage() {
               return (
                 <div key={m.key} className="stat-card" style={{ animationDelay: `${i * 0.05}s` }}>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 rounded-xl" style={{ background: `${m.color}18`, border: `1px solid ${m.color}25` }}>
+                    <div className="p-2 rounded-xl" style={{ background: `${m.color}14`, border: `1px solid ${m.color}30` }}>
                       <Icon style={{ width: 16, height: 16, color: m.color }} />
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{val >= 4 ? '↑' : val >= 3 ? '→' : '↓'}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{val >= 4 ? '↑' : val >= 3 ? '→' : '↓'}</span>
                   </div>
-                  <div className="text-2xl font-black text-white">{val}<span className="text-xs text-white/30">/5</span></div>
-                  <div className="text-[10px] text-white/45 mt-1 leading-tight">{m.label}</div>
+                  <div className="text-2xl font-black text-slate-900">{val}<span className="text-xs text-slate-400">/5</span></div>
+                  <div className="text-[10px] text-slate-500 mt-1 leading-tight">{m.label}</div>
                   <div className="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(val / 5) * 100}%`, background: m.color }} />
                   </div>
@@ -471,8 +474,8 @@ export default function DashboardPage() {
           {/* ── DISTRIBUTIONS PANEL ── */}
           <section className="glass-card p-6 animate-in-delay-1">
             <div className="flex items-center gap-2 mb-6">
-              <BarChart2 className="w-4 h-4 text-white/40" />
-              <h2 className="text-sm font-bold text-white/70 uppercase tracking-wider">Puan Dağılımları</h2>
+              <BarChart2 className="w-4 h-4 text-slate-400" />
+              <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Puan Dağılımları</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {metrics.map((m) => (
@@ -480,11 +483,11 @@ export default function DashboardPage() {
               ))}
             </div>
             {/* Legend */}
-            <div className="flex flex-wrap items-center gap-4 mt-5 pt-5 border-t border-white/[0.06]">
+            <div className="flex flex-wrap items-center gap-4 mt-5 pt-5 border-t border-slate-100">
               {SCORE_COLORS.map((c, i) => (
                 <div key={i} className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-sm" style={{ background: c }} />
-                  <span className="text-[10px] text-white/30">{i + 1}★ {SCORE_LABELS[i]}</span>
+                  <span className="text-[10px] text-slate-400">{i + 1}★ {SCORE_LABELS[i]}</span>
                 </div>
               ))}
             </div>
@@ -494,7 +497,7 @@ export default function DashboardPage() {
           <section className="glass-card p-5 animate-in-delay-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Yolcu adı, e-posta, rezervasyon, tur..."
@@ -503,7 +506,7 @@ export default function DashboardPage() {
                   className="input-dark pl-10"
                 />
                 {searchTerm && (
-                  <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                  <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
@@ -522,9 +525,9 @@ export default function DashboardPage() {
                 <option value={1}>3.0 Altı (Kritik)</option>
               </select>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.05]">
-              <span className="text-[11px] text-white/35">
-                <strong className="text-white/60">{filteredFeedbacks.length}</strong> kayıt gösteriliyor
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+              <span className="text-[11px] text-slate-400">
+                <strong className="text-slate-600">{filteredFeedbacks.length}</strong> kayıt gösteriliyor
               </span>
               <div className="flex items-center gap-3">
                 <span
@@ -550,20 +553,20 @@ export default function DashboardPage() {
             <div className="overflow-x-auto scrollbar-dark">
               <table className="w-full border-collapse" style={{ minWidth: 700 }}>
                 <thead>
-                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                    <th className="p-4 pl-6 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Yolcu</th>
-                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Tur</th>
-                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Puanlar</th>
-                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Ortalama</th>
-                    <th className="p-4 pr-6 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Tarih</th>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th className="p-4 pl-6 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">Yolcu</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">Tur</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">Puanlar</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">Ortalama</th>
+                    <th className="p-4 pr-6 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">Tarih</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredFeedbacks.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="p-16 text-center">
-                        <Search className="w-8 h-8 text-white/15 mx-auto mb-3" />
-                        <p className="text-white/30 text-sm">Uygun kayıt bulunamadı.</p>
+                        <Search className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-400 text-sm">Uygun kayıt bulunamadı.</p>
                       </td>
                     </tr>
                   ) : filteredFeedbacks.map((fb) => {
@@ -576,21 +579,21 @@ export default function DashboardPage() {
                         <tr
                           onClick={() => setExpandedRow(isExpanded ? null : fb.id)}
                           className={`cursor-pointer transition-all duration-150 ${isExpanded ? 'table-row-expanded' : ''}`}
-                          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                          onMouseEnter={(e) => { if (!isExpanded) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)'; }}
+                          style={{ borderBottom: '1px solid #f3f4f6' }}
+                          onMouseEnter={(e) => { if (!isExpanded) (e.currentTarget as HTMLElement).style.background = '#f9fafb'; }}
                           onMouseLeave={(e) => { if (!isExpanded) (e.currentTarget as HTMLElement).style.background = ''; }}
                         >
                           {/* Passenger */}
                           <td className="p-4 pl-6">
-                            <div className="font-semibold text-white text-sm">{fb.passengerName}</div>
+                            <div className="font-semibold text-slate-900 text-sm">{fb.passengerName}</div>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
                               {fb.reservationNo && (
-                                <span className="flex items-center gap-1 text-[10px] text-white/35 font-mono">
+                                <span className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
                                   <Hash className="w-2.5 h-2.5" />{fb.reservationNo}
                                 </span>
                               )}
                               {fb.email && (
-                                <span className="flex items-center gap-1 text-[10px] text-white/35">
+                                <span className="flex items-center gap-1 text-[10px] text-slate-400">
                                   <Mail className="w-2.5 h-2.5" />{fb.email}
                                 </span>
                               )}
@@ -599,8 +602,8 @@ export default function DashboardPage() {
 
                           {/* Tour */}
                           <td className="p-4">
-                            <div className="flex items-center gap-1.5 text-sm text-white/70 font-medium max-w-[180px]">
-                              <MapPin className="w-3.5 h-3.5 text-white/25 shrink-0" />
+                            <div className="flex items-center gap-1.5 text-sm text-slate-600 font-medium max-w-[180px]">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                               <span className="truncate">{fb.tourName || '—'}</span>
                             </div>
                           </td>
@@ -616,7 +619,7 @@ export default function DashboardPage() {
                                 { label: 'U', val: fb.transportationSatisfaction, color: '#ef4444' },
                               ].map((s) => (
                                 <div key={s.label} className="text-center" title={`${s.label}: ${s.val}/5`}>
-                                  <div className="text-xs font-black text-white">{s.val}</div>
+                                  <div className="text-xs font-black text-slate-900">{s.val}</div>
                                   <div className="text-[8px] font-bold mt-0.5" style={{ color: s.color }}>{s.label}</div>
                                 </div>
                               ))}
@@ -626,18 +629,18 @@ export default function DashboardPage() {
                           {/* Average */}
                           <td className="p-4">
                             <div className="flex flex-col gap-1">
-                              <span className="text-white font-black text-base">{avg.toFixed(2)}</span>
+                              <span className="text-slate-900 font-black text-base">{avg.toFixed(2)}</span>
                               <span className={`badge ${badge.bg}`}>{badge.label}</span>
                             </div>
                           </td>
 
                           {/* Date */}
                           <td className="p-4 pr-6">
-                            <div className="text-xs text-white/40 whitespace-nowrap">
+                            <div className="text-xs text-slate-500 whitespace-nowrap">
                               {new Date(fb.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                             {(fb.additionalComments || isExpanded) && (
-                              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-white/25">
+                              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-slate-400">
                                 <MessageSquare className="w-3 h-3" />
                                 {isExpanded ? 'Kapat' : 'Yorum var'}
                               </div>
@@ -647,18 +650,18 @@ export default function DashboardPage() {
 
                         {/* Expanded comments row */}
                         {isExpanded && (
-                          <tr style={{ background: 'rgba(122,0,6,0.04)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <tr style={{ background: '#fff9f9', borderBottom: '1px solid #f3f4f6' }}>
                             <td colSpan={5} className="px-6 pb-5 pt-2">
                               <div className="flex items-start gap-3 max-w-2xl">
                                 <MessageSquare className="w-4 h-4 text-red-400/60 shrink-0 mt-1" />
                                 <div>
-                                  <div className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">Müşteri Yorumu</div>
+                                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Müşteri Yorumu</div>
                                   {fb.additionalComments ? (
-                                    <p className="text-sm text-white/60 leading-relaxed italic border-l-2 border-red-800/50 pl-3">
+                                    <p className="text-sm text-slate-600 leading-relaxed italic border-l-2 border-red-300 pl-3">
                                       "{fb.additionalComments}"
                                     </p>
                                   ) : (
-                                    <p className="text-xs text-white/25 italic">Bu kayıt için ek yorum girilmemiş.</p>
+                                    <p className="text-xs text-slate-400 italic">Bu kayıt için ek yorum girilmemiş.</p>
                                   )}
                                 </div>
                               </div>
@@ -676,8 +679,8 @@ export default function DashboardPage() {
         </main>
 
         {/* ── FOOTER ── */}
-        <footer className="text-center py-8 mt-4 border-t border-white/[0.05]">
-          <p className="text-[11px] text-white/20">
+        <footer className="text-center py-8 mt-4 border-t border-slate-200">
+          <p className="text-[11px] text-slate-400">
             © {new Date().getFullYear()} Ejder Turizm · Müşteri Memnuniyeti Analiz Sistemi
           </p>
         </footer>
