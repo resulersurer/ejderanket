@@ -28,6 +28,10 @@ const prismaClientSingleton = () => {
   // we use a dummy connection string to construct the client without errors.
   if (isInvalidUrl(databaseUrl)) {
     databaseUrl = 'postgresql://dummy:dummy@ep-dummy-123456.us-east-1.aws.neon.tech/neondb';
+  } else if (databaseUrl) {
+    // Sanitize the connection string by removing parameters like channel_binding
+    // that may cause parsing issues in the serverless driver, defaulting to localhost.
+    databaseUrl = databaseUrl.replace(/[\?&]channel_binding=[^&]+/g, '');
   }
 
   const pool = new Pool({ connectionString: databaseUrl });
