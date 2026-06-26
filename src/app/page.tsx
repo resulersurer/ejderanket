@@ -101,7 +101,7 @@ export default function SurveyPage() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!form.passengerName.trim()) {
       newErrors.passengerName = 'Yolcu adı soyadı gereklidir.';
     } else if (form.passengerName.trim().length < 2) {
@@ -161,7 +161,7 @@ export default function SurveyPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fafaf9] via-[#f5f5f4] to-[#e7e5e4] text-slate-800 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8 selection:bg-red-700 selection:text-white">
-      
+
       {/* Background Decorative Circles */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-red-500/5 rounded-full blur-3xl -z-10 animate-pulse duration-[8s]" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -z-10 animate-pulse duration-[12s]" />
@@ -183,12 +183,12 @@ export default function SurveyPage() {
             className="rounded-2xl border border-red-500/10 shadow-[0_4px_20px_rgba(185,28,28,0.08)] bg-white"
           />
         </div>
-        
+
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-55 border border-red-100/60 mb-4 text-red-800 text-xs font-semibold tracking-wider uppercase shadow-sm">
-          <Compass className="w-3.5 h-3.5 text-red-700 animate-spin duration-[20s]" /> Ejder Turizm Memnuniyet Portalı
+          <Compass className="w-3.5 h-3.5 text-red-700 animate-spin duration-[20s]" /> Ejder Turizm Memnuniyet Anketi
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 bg-clip-text">
-          Seyahat Deneyiminizi Değerlendirin
+          Tur Deneyiminizi Değerlendirin
         </h1>
         <p className="mt-3 text-sm text-slate-500 max-w-sm mx-auto">
           Ejder Turizm seyahatinizin kalitesini analiz edebilmemiz için geri bildiriminiz bizim için çok değerlidir.
@@ -197,7 +197,7 @@ export default function SurveyPage() {
 
       <main className="flex-grow flex items-center justify-center max-w-xl mx-auto w-full">
         <div className="w-full bg-white/80 border border-stone-200/80 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-stone-200/50 backdrop-blur-xl relative overflow-hidden transition-all duration-300 hover:border-stone-300/80">
-          
+
           {/* Top Gold-Crimson Accent Bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-amber-500 to-red-700" />
 
@@ -211,7 +211,7 @@ export default function SurveyPage() {
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-sm mx-auto mb-6">
                 {successMessage}
               </p>
-              
+
               {simulatedMode && (
                 <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed max-w-xs mx-auto text-left flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -231,7 +231,7 @@ export default function SurveyPage() {
           ) : (
             /* Survey Form */
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               {serverError && (
                 <div className="p-3.5 rounded-xl bg-red-55 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
                   <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -242,7 +242,7 @@ export default function SurveyPage() {
               {/* Step 1: Passenger Info */}
               <div className="space-y-4">
                 <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-105 pb-2">
-                  <ShieldCheck className="w-4 h-4" /> 1. Yolcu ve Seyahat Bilgileri
+                  <ShieldCheck className="w-4 h-4" /> 1. Yolcu Bilgileri
                 </h3>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -256,9 +256,8 @@ export default function SurveyPage() {
                       name="passengerName"
                       value={form.passengerName}
                       onChange={handleInputChange}
-                      className={`w-full bg-white border ${
-                        errors.passengerName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      className={`w-full bg-white border ${errors.passengerName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                        } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.passengerName && (
                       <p className="mt-1 text-xs text-red-655">{errors.passengerName}</p>
@@ -275,9 +274,8 @@ export default function SurveyPage() {
                       name="email"
                       value={form.email}
                       onChange={handleInputChange}
-                      className={`w-full bg-white border ${
-                        errors.email ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      className={`w-full bg-white border ${errors.email ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                        } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.email && (
                       <p className="mt-1 text-xs text-red-655">{errors.email}</p>
@@ -296,9 +294,8 @@ export default function SurveyPage() {
                       name="reservationNo"
                       value={form.reservationNo}
                       onChange={handleInputChange}
-                      className={`w-full bg-white border ${
-                        errors.reservationNo ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      className={`w-full bg-white border ${errors.reservationNo ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                        } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.reservationNo && (
                       <p className="mt-1 text-xs text-red-655">{errors.reservationNo}</p>
@@ -315,9 +312,8 @@ export default function SurveyPage() {
                       name="tourName"
                       value={form.tourName}
                       onChange={handleInputChange}
-                      className={`w-full bg-white border ${
-                        errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                      className={`w-full bg-white border ${errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                        } rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
                     />
                     {errors.tourName && (
                       <p className="mt-1 text-xs text-red-655">{errors.tourName}</p>
@@ -372,11 +368,10 @@ export default function SurveyPage() {
                                   className="p-1 focus:outline-none transition-all duration-150 transform hover:scale-125 focus:scale-110 active:scale-95"
                                 >
                                   <Star
-                                    className={`w-6 h-6 stroke-1.5 transition-all duration-150 ${
-                                      filled
-                                        ? 'fill-amber-400 stroke-amber-400 filter drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]'
-                                        : 'stroke-stone-300 hover:stroke-amber-400/50'
-                                    }`}
+                                    className={`w-6 h-6 stroke-1.5 transition-all duration-150 ${filled
+                                      ? 'fill-amber-400 stroke-amber-400 filter drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]'
+                                      : 'stroke-stone-300 hover:stroke-amber-400/50'
+                                      }`}
                                   />
                                 </button>
                               );
@@ -455,14 +450,6 @@ export default function SurveyPage() {
         <p className="text-xs text-slate-500">
           © {new Date().getFullYear()} Ejder Turizm. Tüm hakları saklıdır.
         </p>
-        <div className="mt-2.5">
-          <a
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs text-red-800 hover:text-red-700 hover:border-red-300 transition-all font-medium border border-red-200 bg-red-50/50 px-3 py-1 rounded-full shadow-sm"
-          >
-            Admin Paneli Görünümü ↗
-          </a>
-        </div>
       </footer>
     </div>
   );
