@@ -5,18 +5,23 @@ import {
   Users,
   Star,
   RefreshCw,
-  Compass,
   Search,
   MessageSquare,
-  Filter,
   Calendar,
   AlertCircle,
-  Database,
   ArrowLeft,
   Award,
   BedDouble,
   Utensils,
-  PlaneTakeoff
+  PlaneTakeoff,
+  TrendingUp,
+  BarChart2,
+  ChevronDown,
+  ChevronUp,
+  X,
+  MapPin,
+  Mail,
+  Hash,
 } from 'lucide-react';
 
 interface Feedback {
@@ -56,6 +61,86 @@ interface DashboardData {
   feedbacks: Feedback[];
 }
 
+const SCORE_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981'];
+const SCORE_LABELS = ['Çok Kötü', 'Zayıf', 'Orta', 'İyi', 'Mükemmel'];
+
+function ScoreGauge({ value, max = 5 }: { value: number; max?: number }) {
+  const pct = (value / max) * 100;
+  const color = value >= 4.5 ? '#10b981' : value >= 3.5 ? '#22c55e' : value >= 2.5 ? '#eab308' : '#ef4444';
+  const circumference = 2 * Math.PI * 36;
+  const strokeDashoffset = circumference - (pct / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width="88" height="88" viewBox="0 0 88 88" className="-rotate-90">
+        <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8" />
+        <circle
+          cx="44" cy="44" r="36" fill="none"
+          stroke={color} strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          style={{ transition: 'stroke-dashoffset 1s ease' }}
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className="text-xl font-black text-white leading-none">{value}</span>
+        <span className="text-[9px] text-white/40 font-medium">/5</span>
+      </div>
+    </div>
+  );
+}
+
+function StarRow({ rating, size = 14 }: { rating: number; size?: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star
+          key={s}
+          style={{ width: size, height: size }}
+          className={s <= Math.round(rating) ? 'fill-amber-400 stroke-amber-400' : 'fill-transparent stroke-white/20'}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DistributionBar({ distribution, label }: { distribution: number[]; label: string }) {
+  const total = distribution.reduce((a, b) => a + b, 0);
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-white/60">{label}</span>
+        <span className="text-[10px] text-white/30">{total} yanıt</span>
+      </div>
+      <div className="flex gap-0.5 h-2 rounded-full overflow-hidden bg-white/5">
+        {distribution.map((count, i) => {
+          const w = total > 0 ? (count / total) * 100 : 0;
+          return w > 0 ? (
+            <div
+              key={i}
+              style={{ width: `${w}%`, backgroundColor: SCORE_COLORS[i] }}
+              className="h-full transition-all duration-700"
+              title={`${i + 1} Yıldız: ${count} kişi (${w.toFixed(1)}%)`}
+            />
+          ) : null;
+        })}
+      </div>
+      <div className="flex gap-1">
+        {distribution.map((count, i) => {
+          const w = total > 0 ? (count / total) * 100 : 0;
+          return (
+            <div key={i} className="flex-1 text-center">
+              <div className="text-[9px] font-bold" style={{ color: SCORE_COLORS[i] }}>{count}</div>
+              <div className="text-[8px] text-white/25">{i + 1}★</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,20 +149,20 @@ export default function DashboardPage() {
   const [minRatingFilter, setMinRatingFilter] = useState<number>(0);
   const [selectedTour, setSelectedTour] = useState<string>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'date' | 'score'>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const fetchDashboardData = async () => {
     try {
       setIsRefreshing(true);
       const res = await fetch('/api/dashboard');
-      if (!res.ok) {
-        throw new Error('API verisi yüklenirken sunucu hata döndürdü.');
-      }
+      if (!res.ok) throw new Error('Sunucu hata döndürdü.');
       const json = await res.json();
       setData(json);
       setError(null);
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Veri çekilirken bilinmeyen bir hata oluştu.');
+      setError(err.message || 'Veri çekilirken hata oluştu.');
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -85,20 +170,19 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    document.title = "Ejder Turizm | Yönetim Paneli";
+    document.title = 'Ejder Turizm | Yönetim Paneli';
     fetchDashboardData();
   }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 text-slate-800 flex flex-col items-center justify-center p-6">
-        <div className="space-y-4 text-center">
+      <div className="min-h-screen dashboard-bg flex items-center justify-center">
+        <div className="text-center space-y-4">
           <div className="relative inline-flex">
-            <Compass className="w-12 h-12 text-red-700 animate-spin duration-[4s]" />
-            <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-red-200/55 animate-ping" />
+            <div className="w-16 h-16 rounded-full border-2 border-red-500/30 border-t-red-500 animate-spin" />
+            <img src="/ejder-logo.png" alt="Logo" className="absolute inset-0 m-auto w-8 h-8 rounded-md object-cover" />
           </div>
-          <h2 className="text-lg font-semibold tracking-wider text-slate-700">İstatistikler Yükleniyor...</h2>
-          <p className="text-xs text-slate-500 max-w-xs">Ejder Turizm memnuniyet verileri toparlanıyor.</p>
+          <p className="text-white/50 text-sm font-medium tracking-wider">Veriler yükleniyor…</p>
         </div>
       </div>
     );
@@ -106,17 +190,14 @@ export default function DashboardPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-stone-50 text-slate-800 flex flex-col items-center justify-center p-6">
-        <div className="bg-red-55 border border-red-200 max-w-md p-6 rounded-2xl text-center space-y-4 shadow-sm">
-          <AlertCircle className="w-12 h-12 text-red-700 mx-auto" />
-          <h2 className="text-xl font-bold text-slate-900">Veriler Yüklenemedi</h2>
-          <p className="text-sm text-slate-650 leading-relaxed">{error || 'Beklenmedik bir hata oluştu.'}</p>
+      <div className="min-h-screen dashboard-bg flex items-center justify-center p-6">
+        <div className="glass-card max-w-sm w-full p-8 text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
+          <h2 className="text-white font-bold text-lg">Veriler Yüklenemedi</h2>
+          <p className="text-white/50 text-sm">{error || 'Beklenmedik bir hata oluştu.'}</p>
           <button
-            onClick={() => {
-              setLoading(true);
-              fetchDashboardData();
-            }}
-            className="inline-flex items-center gap-2 bg-red-800 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm"
+            onClick={() => { setLoading(true); fetchDashboardData(); }}
+            className="btn-primary w-full"
           >
             <RefreshCw className="w-4 h-4" /> Yeniden Dene
           </button>
@@ -125,571 +206,482 @@ export default function DashboardPage() {
     );
   }
 
-  const uniqueTours = ['all', ...Array.from(new Set(data.feedbacks.map((f) => f.tourName)))];
+  const uniqueTours = ['all', ...Array.from(new Set(data.feedbacks.map((f) => f.tourName).filter(Boolean)))];
 
-  const filteredFeedbacks = data.feedbacks.filter((fb) => {
-    const matchesSearch =
-      fb.passengerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fb.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fb.reservationNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fb.tourName.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredFeedbacks = data.feedbacks
+    .filter((fb) => {
+      const q = searchTerm.toLowerCase();
+      const matchSearch =
+        fb.passengerName?.toLowerCase().includes(q) ||
+        fb.email?.toLowerCase().includes(q) ||
+        fb.reservationNo?.toLowerCase().includes(q) ||
+        fb.tourName?.toLowerCase().includes(q);
+      const avg = (fb.tourSatisfaction + fb.guidePerformance + fb.hotelSatisfaction + fb.restaurantSatisfaction + fb.transportationSatisfaction) / 5;
+      const matchRating = minRatingFilter === 0 || avg >= minRatingFilter;
+      const matchTour = selectedTour === 'all' || fb.tourName === selectedTour;
+      return matchSearch && matchRating && matchTour;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'date') {
+        const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return sortDir === 'desc' ? -diff : diff;
+      } else {
+        const avgA = (a.tourSatisfaction + a.guidePerformance + a.hotelSatisfaction + a.restaurantSatisfaction + a.transportationSatisfaction) / 5;
+        const avgB = (b.tourSatisfaction + b.guidePerformance + b.hotelSatisfaction + b.restaurantSatisfaction + b.transportationSatisfaction) / 5;
+        return sortDir === 'desc' ? avgB - avgA : avgA - avgB;
+      }
+    });
 
-    const overallScore =
-      (fb.tourSatisfaction +
-        fb.guidePerformance +
-        fb.hotelSatisfaction +
-        fb.restaurantSatisfaction +
-        fb.transportationSatisfaction) / 5;
-    const matchesRating = minRatingFilter === 0 || overallScore >= minRatingFilter;
-
-    const matchesTour = selectedTour === 'all' || fb.tourName === selectedTour;
-
-    return matchesSearch && matchesRating && matchesTour;
-  });
-
-  const renderStars = (rating: number, size = 4) => {
-    return (
-      <div className="flex items-center gap-0.5 select-none">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-${size} h-${size} ${
-              star <= Math.round(rating)
-                ? 'fill-amber-400 stroke-amber-400'
-                : 'stroke-stone-300 fill-transparent'
-            }`}
-          />
-        ))}
-      </div>
-    );
+  const getScoreBadge = (score: number) => {
+    if (score >= 4.5) return { label: 'Mükemmel', bg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' };
+    if (score >= 3.5) return { label: 'İyi', bg: 'bg-green-500/15 text-green-400 border-green-500/20' };
+    if (score >= 2.5) return { label: 'Orta', bg: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20' };
+    return { label: 'Kritik', bg: 'bg-red-500/15 text-red-400 border-red-500/20' };
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 4.5) return 'text-emerald-600';
-    if (score >= 3.5) return 'text-green-600';
-    if (score >= 2.5) return 'text-amber-600';
-    return 'text-red-655';
-  };
+  const metrics = [
+    { key: 'tourSatisfaction', label: 'Tur Memnuniyeti', icon: TrendingUp, color: '#6366f1', dist: data.distributions.tourSatisfaction },
+    { key: 'guidePerformance', label: 'Rehber Performansı', icon: Award, color: '#10b981', dist: data.distributions.guidePerformance },
+    { key: 'hotelSatisfaction', label: 'Otel Memnuniyeti', icon: BedDouble, color: '#8b5cf6', dist: data.distributions.hotelSatisfaction },
+    { key: 'restaurantSatisfaction', label: 'Restoran', icon: Utensils, color: '#f97316', dist: data.distributions.restaurantSatisfaction },
+    { key: 'transportationSatisfaction', label: 'Ulaşım', icon: PlaneTakeoff, color: '#ef4444', dist: data.distributions.transportationSatisfaction },
+  ] as const;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fafaf9] via-[#f5f5f4] to-[#e7e5e4] text-slate-800 selection:bg-red-700 selection:text-white">
-      
-      {/* Background Ornaments */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-3xl -z-10" />
+    <>
+      <style>{`
+        .dashboard-bg {
+          background: #0a0a0f;
+          background-image:
+            radial-gradient(ellipse 80% 50% at 20% -10%, rgba(122,0,6,0.25) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 40% at 80% 110%, rgba(99,102,241,0.12) 0%, transparent 60%);
+          min-height: 100vh;
+        }
+        .glass-card {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 16px;
+          backdrop-filter: blur(12px);
+        }
+        .glass-card-hover {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 16px;
+          backdrop-filter: blur(12px);
+          transition: all 0.2s ease;
+        }
+        .glass-card-hover:hover {
+          background: rgba(255,255,255,0.07);
+          border-color: rgba(255,255,255,0.14);
+          transform: translateY(-1px);
+        }
+        .stat-card {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          padding: 24px;
+          transition: all 0.25s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+          pointer-events: none;
+        }
+        .stat-card:hover {
+          border-color: rgba(255,255,255,0.16);
+          transform: translateY(-2px);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .btn-primary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 10px 18px;
+          background: linear-gradient(135deg, #7a0006, #b91c1c);
+          color: white;
+          border-radius: 12px;
+          font-size: 13px;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 20px rgba(122,0,6,0.4);
+        }
+        .btn-primary:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+          box-shadow: 0 8px 30px rgba(122,0,6,0.5);
+        }
+        .btn-ghost {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          background: rgba(255,255,255,0.06);
+          color: rgba(255,255,255,0.7);
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 500;
+          border: 1px solid rgba(255,255,255,0.1);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .btn-ghost:hover {
+          background: rgba(255,255,255,0.1);
+          color: white;
+        }
+        .input-dark {
+          width: 100%;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 12px;
+          padding: 10px 14px;
+          color: white;
+          font-size: 13px;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+        .input-dark::placeholder { color: rgba(255,255,255,0.3); }
+        .input-dark:focus {
+          border-color: rgba(122,0,6,0.6);
+          background: rgba(255,255,255,0.07);
+          box-shadow: 0 0 0 3px rgba(122,0,6,0.15);
+        }
+        .input-dark option { background: #1a1a2e; color: white; }
+        .table-row-expanded {
+          background: rgba(122,0,6,0.06);
+          border-left: 2px solid rgba(122,0,6,0.5);
+        }
+        .sort-btn { 
+          cursor: pointer; 
+          user-select: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 11px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          transition: color 0.2s;
+        }
+        .sort-btn:hover, .sort-btn.active { color: rgba(255,255,255,0.8); }
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 3px 8px;
+          border-radius: 20px;
+          font-size: 10px;
+          font-weight: 700;
+          border: 1px solid;
+          letter-spacing: 0.04em;
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: fadeInUp 0.4s ease forwards; }
+        .animate-in-delay-1 { animation: fadeInUp 0.4s ease 0.05s forwards; opacity: 0; }
+        .animate-in-delay-2 { animation: fadeInUp 0.4s ease 0.1s forwards; opacity: 0; }
+        .animate-in-delay-3 { animation: fadeInUp 0.4s ease 0.15s forwards; opacity: 0; }
+        .animate-in-delay-4 { animation: fadeInUp 0.4s ease 0.2s forwards; opacity: 0; }
+        .scrollbar-dark::-webkit-scrollbar { height: 4px; }
+        .scrollbar-dark::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+        .scrollbar-dark::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+      `}</style>
 
-      {/* Navigation Header */}
-      <header className="sticky top-0 bg-white/80 border-b border-stone-200/80 backdrop-blur-md z-20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a
-              href="/"
-              className="p-2 rounded-lg bg-stone-55 border border-stone-200 text-slate-600 hover:text-slate-900 transition-all shadow-sm"
-              title="Anket Formuna Dön"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </a>
-            
-            <img
-              src="/ejder-logo.png"
-              alt="Ejder Logo"
-              style={{
-                width: '40px',
-                height: '40px',
-                minWidth: '40px',
-                minHeight: '40px',
-                aspectRatio: '1/1',
-                objectFit: 'cover'
-              }}
-              className="rounded-lg border border-red-500/10"
-            />
+      <div className="dashboard-bg">
 
-            <div>
-              <span className="text-[10px] font-semibold text-red-800 tracking-widest uppercase block">
-                EJDER TURİZM
-              </span>
-              <h1 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-                Müşteri Memnuniyeti Analiz Paneli
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchDashboardData}
-              disabled={isRefreshing}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium bg-white hover:bg-stone-55 border border-stone-200 text-slate-700 rounded-xl transition-all shadow-sm disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Yenile
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
-        {/* Demo Mode / Simulation Warning Banner */}
-        {data.simulated && (
-          <div className="p-4 rounded-2xl bg-amber-5 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-md">
-            <div className="flex items-start gap-3">
-              <Database className="w-5 h-5 shrink-0 mt-0.5 sm:mt-0 text-amber-800" />
+        {/* ── HEADER ── */}
+        <header className="sticky top-0 z-30 border-b border-white/[0.06]" style={{ background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(20px)' }}>
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <a href="/" className="btn-ghost p-2" title="Anket Sayfasına Dön">
+                <ArrowLeft className="w-4 h-4" />
+              </a>
+              <div className="w-px h-6 bg-white/10" />
+              <img src="/ejder-logo.png" alt="Ejder" className="w-9 h-9 rounded-xl object-cover border border-white/10" />
               <div>
-                <p className="text-sm font-bold">Simülasyon Modu Aktif</p>
-                <p className="text-xs text-amber-805/80 mt-0.5">
-                  `DATABASE_URL` tanımlanmadığı için panelde Ejder Turizm programlarına ait gerçekçi örnek veriler (Mock Data) gösterilmektedir.
-                </p>
+                <div className="text-[9px] font-bold text-red-400 tracking-[0.2em] uppercase">Ejder Turizm</div>
+                <div className="text-sm font-bold text-white leading-none mt-0.5">Müşteri Analiz Paneli</div>
               </div>
             </div>
-            <span className="inline-block text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded bg-amber-200/50 border border-amber-300/40 shrink-0 text-center text-amber-900">
-              Demo Görünümü
-            </span>
-          </div>
-        )}
 
-        {/* Aggregate Stats Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          
-          {/* Total Submissions */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Toplam Katılım
-              </span>
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 group-hover:scale-110 transition-transform">
-                <Users className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold"
+                style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.2)', color: '#34d399' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {data.totalCount} Kayıt
               </div>
-            </div>
-            <div>
-              <span className="text-3xl font-extrabold text-slate-900">{data.totalCount}</span>
-              <p className="text-[10px] text-slate-400 mt-1">Gönderilen anket sayısı</p>
-            </div>
-          </div>
-
-          {/* Overall Average */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Genel Ortalama
-              </span>
-              <div className="p-2 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 group-hover:scale-110 transition-transform">
-                <Star className="w-4 h-4 fill-amber-400/20" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.overall)}`}>
-                  {data.averages.overall}
-                </span>
-                <span className="text-xs text-slate-400">/5</span>
-              </div>
-              <div className="mt-1.5">{renderStars(data.averages.overall, 3.5)}</div>
-            </div>
-          </div>
-
-          {/* Guide Performance */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Rehberlik Ort.
-              </span>
-              <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:scale-110 transition-transform">
-                <Award className="w-4 h-4" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.guidePerformance)}`}>
-                  {data.averages.guidePerformance}
-                </span>
-                <span className="text-xs text-slate-400">/5</span>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1">Rehber memnuniyet ortalaması</p>
-            </div>
-          </div>
-
-          {/* Hotel Satisfaction */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Otel Ortalaması
-              </span>
-              <div className="p-2 rounded-xl bg-purple-50 border border-purple-100 text-purple-600 group-hover:scale-110 transition-transform">
-                <BedDouble className="w-4 h-4" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.hotelSatisfaction)}`}>
-                  {data.averages.hotelSatisfaction}
-                </span>
-                <span className="text-xs text-slate-400">/5</span>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1">Konaklama memnuniyet ortalaması</p>
-            </div>
-          </div>
-
-          {/* Restaurant Satisfaction */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Restoran Ort.
-              </span>
-              <div className="p-2 rounded-xl bg-orange-50 border border-orange-100 text-orange-650 group-hover:scale-110 transition-transform">
-                <Utensils className="w-4 h-4" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.restaurantSatisfaction)}`}>
-                  {data.averages.restaurantSatisfaction}
-                </span>
-                <span className="text-xs text-slate-400">/5</span>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1">Restoran memnuniyet ort.</p>
-            </div>
-          </div>
-
-          {/* Transportation Satisfaction */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Ulaşım Ort.
-              </span>
-              <div className="p-2 rounded-xl bg-red-50 border border-red-100 text-red-700 group-hover:scale-110 transition-transform">
-                <PlaneTakeoff className="w-4 h-4" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.transportationSatisfaction)}`}>
-                  {data.averages.transportationSatisfaction}
-                </span>
-                <span className="text-xs text-slate-400">/5</span>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-1">Ulaşım memnuniyet ortalaması</p>
-            </div>
-          </div>
-
-        </section>
-
-        {/* Detailed Metrics Distributions */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white border border-stone-200 p-6 rounded-2xl space-y-4 shadow-md shadow-stone-100/50">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-stone-100 pb-2.5">
-              Genel Tur, Rehber ve Ulaşım Dağılımları
-            </h2>
-
-            <div className="space-y-4 pt-1">
-              {/* Tour Satisfaction Distribution */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500">Tur Memnuniyeti Dağılımı</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
-                    {data.distributions.tourSatisfaction.map((count, index) => {
-                      const total = data.distributions.tourSatisfaction.reduce((a, b) => a + b, 0);
-                      const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
-                      return widthPct > 0 ? (
-                        <div
-                          key={index}
-                          style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
-                          title={`${index + 1} Yıldız: ${count} Kişi`}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Guide Performance Distribution */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500">Rehberlik Memnuniyeti Dağılımı</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
-                    {data.distributions.guidePerformance.map((count, index) => {
-                      const total = data.distributions.guidePerformance.reduce((a, b) => a + b, 0);
-                      const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
-                      return widthPct > 0 ? (
-                        <div
-                          key={index}
-                          style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
-                          title={`${index + 1} Yıldız: ${count} Kişi`}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Transportation Satisfaction Distribution */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500">Ulaşım Memnuniyeti Dağılımı</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
-                    {data.distributions.transportationSatisfaction?.map((count, index) => {
-                      const total = data.distributions.transportationSatisfaction.reduce((a, b) => a + b, 0);
-                      const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
-                      return widthPct > 0 ? (
-                        <div
-                          key={index}
-                          style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
-                          title={`${index + 1} Yıldız: ${count} Kişi`}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Color legend */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-[10px] text-slate-400">
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500" /> 5 Yıldız (Mükemmel)</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500" /> 4 Yıldız (İyi)</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-455" /> 3 Yıldız (Orta)</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-400" /> 2 Yıldız (Zayıf)</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500" /> 1 Yıldız (Çok Kötü)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Accommodation & Catering Distributions */}
-          <div className="bg-white border border-stone-200 p-6 rounded-2xl space-y-4 shadow-md shadow-stone-100/50">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-stone-100 pb-2.5">
-              Otel & Restoran Değerlendirmeleri Dağılımı
-            </h2>
-
-            <div className="space-y-4 pt-1">
-              {/* Hotel Satisfaction Distribution */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500">Otel Memnuniyeti Dağılımı</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
-                    {data.distributions.hotelSatisfaction.map((count, index) => {
-                      const total = data.distributions.hotelSatisfaction.reduce((a, b) => a + b, 0);
-                      const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
-                      return widthPct > 0 ? (
-                        <div
-                          key={index}
-                          style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
-                          title={`${index + 1} Yıldız: ${count} Kişi`}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Restaurant Satisfaction Distribution */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500">Yemek/Restoran Memnuniyeti Dağılımı</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
-                    {data.distributions.restaurantSatisfaction.map((count, index) => {
-                      const total = data.distributions.restaurantSatisfaction.reduce((a, b) => a + b, 0);
-                      const widthPct = total > 0 ? (count / total) * 100 : 0;
-                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
-                      return widthPct > 0 ? (
-                        <div
-                          key={index}
-                          style={{ width: `${widthPct}%` }}
-                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
-                          title={`${index + 1} Yıldız: ${count} Kişi`}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Color legend */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-[10px] text-slate-450">
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500" /> 5 Yıldız</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500" /> 4 Yıldız</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-455" /> 3 Yıldız</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-400" /> 2 Yıldız</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500" /> 1 Yıldız</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Filters and Search Bar */}
-        <section className="bg-white border border-stone-200 rounded-2xl p-5 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between border-b border-stone-105 pb-3">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-              <Filter className="w-4 h-4 text-red-700" /> Filtreler & Arama
-            </h2>
-            <span className="text-xs text-slate-500 font-medium">
-              {filteredFeedbacks.length} sonuç listelendi
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Text Search */}
-            <div className="relative">
-              <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Yolcu adı, E-posta, Rezervasyon veya Tur..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all shadow-sm"
-              />
-            </div>
-
-            {/* Tour filter selection */}
-            <div>
-              <select
-                value={selectedTour}
-                onChange={(e) => setSelectedTour(e.target.value)}
-                className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none focus:ring-4 transition-all shadow-sm"
+              <button
+                onClick={fetchDashboardData}
+                disabled={isRefreshing}
+                className="btn-ghost disabled:opacity-50"
               >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Yenile</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-[1400px] mx-auto px-5 sm:px-8 py-8 space-y-8">
+
+          {/* ── TOP KPI ROW ── */}
+          <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 animate-in">
+
+            {/* Overall Score - special card */}
+            <div className="col-span-2 sm:col-span-3 lg:col-span-2 stat-card flex items-center gap-6"
+              style={{ background: 'linear-gradient(135deg, rgba(122,0,6,0.3) 0%, rgba(10,10,15,0.8) 100%)', borderColor: 'rgba(122,0,6,0.4)' }}>
+              <ScoreGauge value={data.averages.overall} />
+              <div>
+                <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Genel Ortalama</div>
+                <div className="text-4xl font-black text-white">{data.averages.overall}<span className="text-lg text-white/30 font-medium">/5</span></div>
+                <StarRow rating={data.averages.overall} size={13} />
+                <div className="mt-2 text-[10px] text-white/40">{data.totalCount} müşteri değerlendirmesi</div>
+              </div>
+            </div>
+
+            {metrics.map((m, i) => {
+              const val = data.averages[m.key];
+              const Icon = m.icon;
+              return (
+                <div key={m.key} className="stat-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="p-2 rounded-xl" style={{ background: `${m.color}18`, border: `1px solid ${m.color}25` }}>
+                      <Icon style={{ width: 16, height: 16, color: m.color }} />
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{val >= 4 ? '↑' : val >= 3 ? '→' : '↓'}</span>
+                  </div>
+                  <div className="text-2xl font-black text-white">{val}<span className="text-xs text-white/30">/5</span></div>
+                  <div className="text-[10px] text-white/45 mt-1 leading-tight">{m.label}</div>
+                  <div className="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(val / 5) * 100}%`, background: m.color }} />
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+
+          {/* ── DISTRIBUTIONS PANEL ── */}
+          <section className="glass-card p-6 animate-in-delay-1">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart2 className="w-4 h-4 text-white/40" />
+              <h2 className="text-sm font-bold text-white/70 uppercase tracking-wider">Puan Dağılımları</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {metrics.map((m) => (
+                <DistributionBar key={m.key} distribution={m.dist} label={m.label} />
+              ))}
+            </div>
+            {/* Legend */}
+            <div className="flex flex-wrap items-center gap-4 mt-5 pt-5 border-t border-white/[0.06]">
+              {SCORE_COLORS.map((c, i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm" style={{ background: c }} />
+                  <span className="text-[10px] text-white/30">{i + 1}★ {SCORE_LABELS[i]}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── FILTERS ── */}
+          <section className="glass-card p-5 animate-in-delay-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" />
+                <input
+                  type="text"
+                  placeholder="Yolcu adı, e-posta, rezervasyon, tur..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input-dark pl-10"
+                />
+                {searchTerm && (
+                  <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              <select value={selectedTour} onChange={(e) => setSelectedTour(e.target.value)} className="input-dark">
                 <option value="all">Tüm Turlar</option>
-                {uniqueTours.filter(t => t !== 'all').map((tour) => (
-                  <option key={tour} value={tour}>
-                    {tour}
-                  </option>
+                {uniqueTours.filter((t) => t !== 'all').map((t) => (
+                  <option key={t} value={t}>{t}</option>
                 ))}
               </select>
-            </div>
-
-            {/* Min Rating selection */}
-            <div>
-              <select
-                value={minRatingFilter}
-                onChange={(e) => setMinRatingFilter(Number(e.target.value))}
-                className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none focus:ring-4 transition-all shadow-sm"
-              >
-                <option value={0}>Tüm Derecelendirmeler</option>
-                <option value={4.5}>4.5 Yıldız ve Üzeri (Çok İyi)</option>
-                <option value={4}>4.0 Yıldız ve Üzeri (İyi)</option>
-                <option value={3}>3.0 Yıldız ve Üzeri (Orta)</option>
-                <option value={1}>3.0 Yıldız Altı (Kritik Bildirimler)</option>
+              <select value={minRatingFilter} onChange={(e) => setMinRatingFilter(Number(e.target.value))} className="input-dark">
+                <option value={0}>Tüm Değerlendirmeler</option>
+                <option value={4.5}>4.5+ Yıldız (Çok İyi)</option>
+                <option value={4}>4.0+ Yıldız (İyi)</option>
+                <option value={3}>3.0+ Yıldız (Orta)</option>
+                <option value={1}>3.0 Altı (Kritik)</option>
               </select>
             </div>
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.05]">
+              <span className="text-[11px] text-white/35">
+                <strong className="text-white/60">{filteredFeedbacks.length}</strong> kayıt gösteriliyor
+              </span>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`sort-btn ${sortBy === 'date' ? 'active' : ''}`}
+                  onClick={() => { setSortBy('date'); setSortDir(sortBy === 'date' && sortDir === 'desc' ? 'asc' : 'desc'); }}
+                >
+                  <Calendar className="w-3 h-3" /> Tarih
+                  {sortBy === 'date' && (sortDir === 'desc' ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />)}
+                </span>
+                <span
+                  className={`sort-btn ${sortBy === 'score' ? 'active' : ''}`}
+                  onClick={() => { setSortBy('score'); setSortDir(sortBy === 'score' && sortDir === 'desc' ? 'asc' : 'desc'); }}
+                >
+                  <Star className="w-3 h-3" /> Puan
+                  {sortBy === 'score' && (sortDir === 'desc' ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />)}
+                </span>
+              </div>
+            </div>
+          </section>
 
-          </div>
-        </section>
-
-        {/* Results Feedback Table */}
-        <section className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-md">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-stone-50 border-b border-stone-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="p-4 pl-6">Yolcu / İletişim / Rezervasyon</th>
-                  <th className="p-4">Tur Programı</th>
-                  <th className="p-4">Ortalama / Detay Puanlar</th>
-                  <th className="p-4">Tarih</th>
-                  <th className="p-4 pr-6">Görüşler</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-150">
-                {filteredFeedbacks.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-400 text-sm">
-                      Kriterlere uygun memnuniyet formu kaydı bulunamadı.
-                    </td>
+          {/* ── FEEDBACK TABLE ── */}
+          <section className="glass-card overflow-hidden animate-in-delay-3">
+            <div className="overflow-x-auto scrollbar-dark">
+              <table className="w-full border-collapse" style={{ minWidth: 700 }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    <th className="p-4 pl-6 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Yolcu</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Tur</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Puanlar</th>
+                    <th className="p-4 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Ortalama</th>
+                    <th className="p-4 pr-6 text-left text-[10px] font-bold uppercase tracking-widest text-white/30">Tarih</th>
                   </tr>
-                ) : (
-                  filteredFeedbacks.map((fb) => {
-                    const avg =
-                      (fb.tourSatisfaction +
-                        fb.guidePerformance +
-                        fb.hotelSatisfaction +
-                        fb.restaurantSatisfaction +
-                        fb.transportationSatisfaction) / 5;
+                </thead>
+                <tbody>
+                  {filteredFeedbacks.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="p-16 text-center">
+                        <Search className="w-8 h-8 text-white/15 mx-auto mb-3" />
+                        <p className="text-white/30 text-sm">Uygun kayıt bulunamadı.</p>
+                      </td>
+                    </tr>
+                  ) : filteredFeedbacks.map((fb) => {
+                    const avg = (fb.tourSatisfaction + fb.guidePerformance + fb.hotelSatisfaction + fb.restaurantSatisfaction + fb.transportationSatisfaction) / 5;
+                    const badge = getScoreBadge(avg);
+                    const isExpanded = expandedRow === fb.id;
 
                     return (
-                      <tr
-                        key={fb.id}
-                        className="hover:bg-[#fafaf9]/60 transition-colors group text-sm text-slate-800"
-                      >
-                        {/* Passenger Details */}
-                        <td className="p-4 pl-6 space-y-1">
-                          <span className="font-semibold text-slate-900 block group-hover:text-red-750 transition-colors">
-                            {fb.passengerName}
-                          </span>
-                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                            <span className="text-[10px] text-slate-600 font-mono bg-stone-100 border border-stone-200 px-1.5 py-0.5 rounded inline-block shadow-sm">
-                              {fb.reservationNo}
-                            </span>
-                            {fb.email && (
-                              <span className="text-[11px] text-slate-500 font-medium">
-                                {fb.email}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Tour Name */}
-                        <td className="p-4 text-slate-700 font-medium max-w-[200px] truncate">
-                          {fb.tourName}
-                        </td>
-
-                        {/* Ratings */}
-                        <td className="p-4 space-y-1.5">
-                          <div className="flex items-center gap-2">
-                            {renderStars(avg, 3.5)}
-                            <span className={`text-xs font-bold ${getScoreColor(avg)}`}>
-                              {avg.toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-slate-450 max-w-[240px]">
-                            <span>Tur: <strong className="text-slate-655">{fb.tourSatisfaction}</strong></span>
-                            <span>Rehber: <strong className="text-slate-655">{fb.guidePerformance}</strong></span>
-                            <span>Otel: <strong className="text-slate-655">{fb.hotelSatisfaction}</strong></span>
-                            <span>Yemek: <strong className="text-slate-655">{fb.restaurantSatisfaction}</strong></span>
-                            <span className="col-span-2">Ulaşım: <strong className="text-slate-655">{fb.transportationSatisfaction}</strong></span>
-                          </div>
-                        </td>
-
-                        {/* Submission Date */}
-                        <td className="p-4 text-slate-500 text-xs shrink-0 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                            {new Date(fb.createdAt).toLocaleDateString('tr-TR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                            })}
-                          </div>
-                        </td>
-
-                        {/* Additional Comments */}
-                        <td className="p-4 pr-6">
-                          {fb.additionalComments ? (
-                            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/80 text-slate-650 text-xs italic max-w-sm line-clamp-3 hover:line-clamp-none transition-all cursor-pointer leading-relaxed relative group/comment shadow-sm">
-                              "{fb.additionalComments}"
-                              <MessageSquare className="w-3 h-3 text-slate-400 absolute right-2 bottom-2 opacity-0 group-hover/comment:opacity-100 transition-opacity" />
+                      <React.Fragment key={fb.id}>
+                        <tr
+                          onClick={() => setExpandedRow(isExpanded ? null : fb.id)}
+                          className={`cursor-pointer transition-all duration-150 ${isExpanded ? 'table-row-expanded' : ''}`}
+                          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                          onMouseEnter={(e) => { if (!isExpanded) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)'; }}
+                          onMouseLeave={(e) => { if (!isExpanded) (e.currentTarget as HTMLElement).style.background = ''; }}
+                        >
+                          {/* Passenger */}
+                          <td className="p-4 pl-6">
+                            <div className="font-semibold text-white text-sm">{fb.passengerName}</div>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              {fb.reservationNo && (
+                                <span className="flex items-center gap-1 text-[10px] text-white/35 font-mono">
+                                  <Hash className="w-2.5 h-2.5" />{fb.reservationNo}
+                                </span>
+                              )}
+                              {fb.email && (
+                                <span className="flex items-center gap-1 text-[10px] text-white/35">
+                                  <Mail className="w-2.5 h-2.5" />{fb.email}
+                                </span>
+                              )}
                             </div>
-                          ) : (
-                            <span className="text-slate-400 text-xs italic">Yorum yok</span>
-                          )}
-                        </td>
-                      </tr>
+                          </td>
+
+                          {/* Tour */}
+                          <td className="p-4">
+                            <div className="flex items-center gap-1.5 text-sm text-white/70 font-medium max-w-[180px]">
+                              <MapPin className="w-3.5 h-3.5 text-white/25 shrink-0" />
+                              <span className="truncate">{fb.tourName || '—'}</span>
+                            </div>
+                          </td>
+
+                          {/* Score breakdown */}
+                          <td className="p-4">
+                            <div className="grid grid-cols-5 gap-1 max-w-[160px]">
+                              {[
+                                { label: 'T', val: fb.tourSatisfaction, color: '#6366f1' },
+                                { label: 'R', val: fb.guidePerformance, color: '#10b981' },
+                                { label: 'O', val: fb.hotelSatisfaction, color: '#8b5cf6' },
+                                { label: 'Y', val: fb.restaurantSatisfaction, color: '#f97316' },
+                                { label: 'U', val: fb.transportationSatisfaction, color: '#ef4444' },
+                              ].map((s) => (
+                                <div key={s.label} className="text-center" title={`${s.label}: ${s.val}/5`}>
+                                  <div className="text-xs font-black text-white">{s.val}</div>
+                                  <div className="text-[8px] font-bold mt-0.5" style={{ color: s.color }}>{s.label}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+
+                          {/* Average */}
+                          <td className="p-4">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-white font-black text-base">{avg.toFixed(2)}</span>
+                              <span className={`badge ${badge.bg}`}>{badge.label}</span>
+                            </div>
+                          </td>
+
+                          {/* Date */}
+                          <td className="p-4 pr-6">
+                            <div className="text-xs text-white/40 whitespace-nowrap">
+                              {new Date(fb.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </div>
+                            {(fb.additionalComments || isExpanded) && (
+                              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-white/25">
+                                <MessageSquare className="w-3 h-3" />
+                                {isExpanded ? 'Kapat' : 'Yorum var'}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+
+                        {/* Expanded comments row */}
+                        {isExpanded && (
+                          <tr style={{ background: 'rgba(122,0,6,0.04)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                            <td colSpan={5} className="px-6 pb-5 pt-2">
+                              <div className="flex items-start gap-3 max-w-2xl">
+                                <MessageSquare className="w-4 h-4 text-red-400/60 shrink-0 mt-1" />
+                                <div>
+                                  <div className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">Müşteri Yorumu</div>
+                                  {fb.additionalComments ? (
+                                    <p className="text-sm text-white/60 leading-relaxed italic border-l-2 border-red-800/50 pl-3">
+                                      "{fb.additionalComments}"
+                                    </p>
+                                  ) : (
+                                    <p className="text-xs text-white/25 italic">Bu kayıt için ek yorum girilmemiş.</p>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-      </main>
+        </main>
 
-      <footer className="text-center py-10 text-xs text-slate-500 border-t border-stone-200 mt-10">
-        © {new Date().getFullYear()} Ejder Turizm Admin Analiz Portalı. Tüm hakları saklıdır.
-      </footer>
-    </div>
+        {/* ── FOOTER ── */}
+        <footer className="text-center py-8 mt-4 border-t border-white/[0.05]">
+          <p className="text-[11px] text-white/20">
+            © {new Date().getFullYear()} Ejder Turizm · Müşteri Memnuniyeti Analiz Sistemi
+          </p>
+        </footer>
+      </div>
+    </>
   );
 }
