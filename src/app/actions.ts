@@ -27,8 +27,21 @@ export async function submitFeedbackAction(rawData: any) {
     const feedbackData: FeedbackInput = result.data;
 
     // 2. Check if the database connection URL is configured before running database queries
-    if (!process.env.DATABASE_URL) {
-      console.error('❌ DATABASE_URL is not set. Saving data will fail.');
+    const dbUrl = process.env.DATABASE_URL;
+    console.log('DEBUG: DATABASE_URL is:', typeof dbUrl, JSON.stringify(dbUrl));
+
+    const isDbConfigured =
+      dbUrl &&
+      dbUrl.trim() !== '' &&
+      dbUrl !== 'undefined' &&
+      dbUrl !== 'null' &&
+      (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://')) &&
+      !dbUrl.includes('username:password') &&
+      !dbUrl.includes('ep-xxxx') &&
+      !dbUrl.includes('ep-dummy-123456');
+
+    if (!isDbConfigured) {
+      console.error('❌ DATABASE_URL is not set or invalid. Saving data will fail.');
       console.warn('⚠️ Simulating successful save for demonstration purposes.');
       
       // Attempt to send email even if DB is skipped

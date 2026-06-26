@@ -8,12 +8,25 @@ if (typeof window === 'undefined') {
   neonConfig.webSocketConstructor = ws;
 }
 
+const isInvalidUrl = (url: string | undefined) => {
+  if (!url) return true;
+  const trimmed = url.trim();
+  return (
+    trimmed === '' ||
+    trimmed === 'undefined' ||
+    trimmed === 'null' ||
+    (!trimmed.startsWith('postgresql://') && !trimmed.startsWith('postgres://')) ||
+    trimmed.includes('username:password') ||
+    trimmed.includes('ep-xxxx')
+  );
+};
+
 const prismaClientSingleton = () => {
   let databaseUrl = process.env.DATABASE_URL;
 
   // In Prisma 7, we MUST pass an adapter. If DATABASE_URL is not set yet,
   // we use a dummy connection string to construct the client without errors.
-  if (!databaseUrl || databaseUrl.includes('username:password') || databaseUrl.includes('ep-xxxx')) {
+  if (isInvalidUrl(databaseUrl)) {
     databaseUrl = 'postgresql://dummy:dummy@ep-dummy-123456.us-east-1.aws.neon.tech/neondb';
   }
 
