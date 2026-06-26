@@ -157,13 +157,21 @@ export default function SurveyPage() {
       <div className="absolute top-20 left-10 w-72 h-72 bg-red-700/5 rounded-full blur-3xl -z-10 animate-pulse duration-[8s]" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl -z-10 animate-pulse duration-[12s]" />
 
-      <header className="max-w-xl mx-auto text-center mb-6">
+      <header className="max-w-xl mx-auto text-center mb-8 flex flex-col items-center">
         {/* Brand Logo */}
-        <div className="mb-4 inline-block">
+        <div className="mb-5 flex justify-center items-center">
           <img
             src="/ejder-logo.png"
             alt="Ejder Turizm Logo"
-            className="mx-auto w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border border-red-500/25 shadow-[0_0_20px_rgba(239,68,68,0.15)] object-cover"
+            style={{
+              width: '100px',
+              height: '100px',
+              minWidth: '100px',
+              minHeight: '100px',
+              aspectRatio: '1/1',
+              objectFit: 'cover'
+            }}
+            className="rounded-2xl border border-red-500/25 shadow-[0_0_20px_rgba(239,68,68,0.2)] bg-red-950/20"
           />
         </div>
         
