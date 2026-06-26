@@ -28,12 +28,13 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
     return { success: false, error: 'Resend API key is missing' };
   }
 
-  // Calculate overall average satisfaction
+  // Calculate overall average satisfaction (5 metrics now)
   const avg = (
     (feedback.tourSatisfaction +
       feedback.guidePerformance +
       feedback.hotelSatisfaction +
-      feedback.restaurantSatisfaction) / 4
+      feedback.restaurantSatisfaction +
+      feedback.transportationSatisfaction) / 5
   ).toFixed(2);
 
   const emailHtml = `
@@ -61,7 +62,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
           border: 1px solid #e2e8f0;
         }
         .header {
-          background-color: #0f172a;
+          background-color: #7a0006;
           padding: 30px 20px;
           text-align: center;
           border-bottom: 4px solid #d97706;
@@ -74,7 +75,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
           letter-spacing: 0.5px;
         }
         .header p {
-          color: #94a3b8;
+          color: #fca5a5;
           font-size: 14px;
           margin: 8px 0 0 0;
         }
@@ -143,7 +144,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
         }
         .comments-box {
           background-color: #fcfcfc;
-          border-left: 4px solid #d97706;
+          border-left: 4px solid #7a0006;
           padding: 15px;
           border-radius: 0 8px 8px 0;
           font-style: italic;
@@ -161,7 +162,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
           border-top: 1px solid #e2e8f0;
         }
         .footer a {
-          color: #d97706;
+          color: #7a0006;
           text-decoration: none;
           font-weight: 600;
         }
@@ -184,6 +185,10 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
               <tr>
                 <td class="info-label">Yolcu Adı Soyadı:</td>
                 <td class="info-value">${feedback.passengerName}</td>
+              </tr>
+              <tr>
+                <td class="info-label">E-posta Adresi:</td>
+                <td class="info-value">${feedback.email}</td>
               </tr>
               <tr>
                 <td class="info-label">Rezervasyon No:</td>
@@ -226,9 +231,13 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
                 <td>Restoran Memnuniyeti</td>
                 <td>${getScoreBadge(feedback.restaurantSatisfaction)}</td>
               </tr>
-              <tr class="highlight" style="border-top: 2px solid #d97706;">
+              <tr>
+                <td>Ulaşım Hizmetleri Memnuniyeti</td>
+                <td>${getScoreBadge(feedback.transportationSatisfaction)}</td>
+              </tr>
+              <tr class="highlight" style="border-top: 2px solid #7a0006;">
                 <td><strong>Genel Ortalama</strong></td>
-                <td><strong><span style="font-size: 16px; color: #b45309;">${avg} / 5</span></strong></td>
+                <td><strong><span style="font-size: 16px; color: #7a0006;">${avg} / 5</span></strong></td>
               </tr>
             </tbody>
           </table>
@@ -245,7 +254,7 @@ export async function sendFeedbackNotification(feedback: FeedbackInput) {
         <!-- Footer -->
         <div class="footer">
           Bu e-posta Ejder Turizm Memnuniyet Portalı tarafından otomatik olarak oluşturulmuştur.<br>
-          Detaylı analiz için <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard">Admin Paneli</a>'ni ziyaret edebilirsiniz.
+          Detaylı analiz için <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://www.ejderanket.com'}/dashboard">Admin Paneli</a>'ni ziyaret edebilirsiniz.
         </div>
       </div>
     </body>

@@ -6,6 +6,11 @@ export const feedbackSchema = z.object({
     .trim()
     .min(2, 'Yolcu adı en az 2 karakter olmalıdır.')
     .max(100, 'Yolcu adı en fazla 100 karakter olmalıdır.'),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'E-posta adresi zorunludur.')
+    .email('Geçerli bir e-posta adresi giriniz.'),
   tourName: z
     .string()
     .trim()
@@ -41,6 +46,12 @@ export const feedbackSchema = z.object({
     .int('Puan tamsayı olmalıdır.')
     .min(1, 'Lütfen restoran memnuniyeti için 1-5 arası bir puan seçin.')
     .max(5, 'Restoran memnuniyeti puanı en fazla 5 olabilir.'),
+  transportationSatisfaction: z
+    .coerce
+    .number()
+    .int('Puan tamsayı olmalıdır.')
+    .min(1, 'Lütfen ulaşım hizmetleri memnuniyeti için 1-5 arası bir puan seçin.')
+    .max(5, 'Ulaşım hizmetleri memnuniyeti puanı en fazla 5 olabilir.'),
   additionalComments: z
     .string()
     .trim()

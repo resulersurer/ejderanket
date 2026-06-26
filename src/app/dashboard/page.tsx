@@ -15,18 +15,21 @@ import {
   ArrowLeft,
   Award,
   BedDouble,
-  Utensils
+  Utensils,
+  PlaneTakeoff
 } from 'lucide-react';
 
 interface Feedback {
   id: string;
   passengerName: string;
+  email: string;
   tourName: string;
   reservationNo: string;
   tourSatisfaction: number;
   guidePerformance: number;
   hotelSatisfaction: number;
   restaurantSatisfaction: number;
+  transportationSatisfaction: number;
   additionalComments: string | null;
   createdAt: string;
 }
@@ -40,6 +43,7 @@ interface DashboardData {
     guidePerformance: number;
     hotelSatisfaction: number;
     restaurantSatisfaction: number;
+    transportationSatisfaction: number;
     overall: number;
   };
   distributions: {
@@ -47,6 +51,7 @@ interface DashboardData {
     guidePerformance: number[];
     hotelSatisfaction: number[];
     restaurantSatisfaction: number[];
+    transportationSatisfaction: number[];
   };
   feedbacks: Feedback[];
 }
@@ -101,7 +106,7 @@ export default function DashboardPage() {
   if (error || !data) {
     return (
       <div className="min-h-screen bg-stone-50 text-slate-800 flex flex-col items-center justify-center p-6">
-        <div className="bg-red-50 border border-red-200 max-w-md p-6 rounded-2xl text-center space-y-4 shadow-sm">
+        <div className="bg-red-55 border border-red-200 max-w-md p-6 rounded-2xl text-center space-y-4 shadow-sm">
           <AlertCircle className="w-12 h-12 text-red-700 mx-auto" />
           <h2 className="text-xl font-bold text-slate-900">Veriler Yüklenemedi</h2>
           <p className="text-sm text-slate-650 leading-relaxed">{error || 'Beklenmedik bir hata oluştu.'}</p>
@@ -124,11 +129,16 @@ export default function DashboardPage() {
   const filteredFeedbacks = data.feedbacks.filter((fb) => {
     const matchesSearch =
       fb.passengerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fb.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fb.reservationNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fb.tourName.toLowerCase().includes(searchTerm.toLowerCase());
 
     const overallScore =
-      (fb.tourSatisfaction + fb.guidePerformance + fb.hotelSatisfaction + fb.restaurantSatisfaction) / 4;
+      (fb.tourSatisfaction +
+        fb.guidePerformance +
+        fb.hotelSatisfaction +
+        fb.restaurantSatisfaction +
+        fb.transportationSatisfaction) / 5;
     const matchesRating = minRatingFilter === 0 || overallScore >= minRatingFilter;
 
     const matchesTour = selectedTour === 'all' || fb.tourName === selectedTour;
@@ -157,7 +167,7 @@ export default function DashboardPage() {
     if (score >= 4.5) return 'text-emerald-600';
     if (score >= 3.5) return 'text-green-600';
     if (score >= 2.5) return 'text-amber-600';
-    return 'text-red-650';
+    return 'text-red-655';
   };
 
   return (
@@ -173,7 +183,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <a
               href="/"
-              className="p-2 rounded-lg bg-stone-50 border border-stone-200 text-slate-600 hover:text-slate-900 transition-all shadow-sm"
+              className="p-2 rounded-lg bg-stone-55 border border-stone-200 text-slate-600 hover:text-slate-900 transition-all shadow-sm"
               title="Anket Formuna Dön"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -220,12 +230,12 @@ export default function DashboardPage() {
         
         {/* Demo Mode / Simulation Warning Banner */}
         {data.simulated && (
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-amber-5 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-md">
             <div className="flex items-start gap-3">
               <Database className="w-5 h-5 shrink-0 mt-0.5 sm:mt-0 text-amber-800" />
               <div>
                 <p className="text-sm font-bold">Simülasyon Modu Aktif</p>
-                <p className="text-xs text-amber-800/80 mt-0.5">
+                <p className="text-xs text-amber-805/80 mt-0.5">
                   `DATABASE_URL` tanımlanmadığı için panelde Ejder Turizm programlarına ait gerçekçi örnek veriler (Mock Data) gösterilmektedir.
                 </p>
               </div>
@@ -237,10 +247,10 @@ export default function DashboardPage() {
         )}
 
         {/* Aggregate Stats Cards */}
-        <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           
           {/* Total Submissions */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100 hover:shadow-lg transition-all duration-200 group">
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Toplam Katılım
@@ -256,7 +266,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Overall Average */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100 hover:shadow-lg transition-all duration-200 group">
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Genel Ortalama
@@ -277,7 +287,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Guide Performance */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100 hover:shadow-lg transition-all duration-200 group">
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Rehberlik Ort.
@@ -298,7 +308,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Hotel Satisfaction */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100 hover:shadow-lg transition-all duration-200 group">
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Otel Ortalaması
@@ -319,7 +329,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Restaurant Satisfaction */}
-          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100 hover:shadow-lg transition-all duration-200 group">
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Restoran Ort.
@@ -335,7 +345,28 @@ export default function DashboardPage() {
                 </span>
                 <span className="text-xs text-slate-400">/5</span>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">Restoran/Yemek memnuniyet ort.</p>
+              <p className="text-[10px] text-slate-400 mt-1">Restoran memnuniyet ort.</p>
+            </div>
+          </div>
+
+          {/* Transportation Satisfaction */}
+          <div className="bg-white border border-stone-200 p-5 rounded-2xl flex flex-col justify-between hover:border-stone-300 shadow-md shadow-stone-100/50 hover:shadow-lg transition-all duration-200 group">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Ulaşım Ort.
+              </span>
+              <div className="p-2 rounded-xl bg-red-50 border border-red-100 text-red-700 group-hover:scale-110 transition-transform">
+                <PlaneTakeoff className="w-4 h-4" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-baseline gap-1">
+                <span className={`text-3xl font-extrabold ${getScoreColor(data.averages.transportationSatisfaction)}`}>
+                  {data.averages.transportationSatisfaction}
+                </span>
+                <span className="text-xs text-slate-400">/5</span>
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1">Ulaşım memnuniyet ortalaması</p>
             </div>
           </div>
 
@@ -345,7 +376,7 @@ export default function DashboardPage() {
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white border border-stone-200 p-6 rounded-2xl space-y-4 shadow-md shadow-stone-100/50">
             <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-stone-100 pb-2.5">
-              Genel Tur ve Rehber Performansı Dağılımı
+              Genel Tur, Rehber ve Ulaşım Dağılımları
             </h2>
 
             <div className="space-y-4 pt-1">
@@ -378,6 +409,28 @@ export default function DashboardPage() {
                   <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
                     {data.distributions.guidePerformance.map((count, index) => {
                       const total = data.distributions.guidePerformance.reduce((a, b) => a + b, 0);
+                      const widthPct = total > 0 ? (count / total) * 100 : 0;
+                      const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
+                      return widthPct > 0 ? (
+                        <div
+                          key={index}
+                          style={{ width: `${widthPct}%` }}
+                          className={`${bgColors[index]} h-full transition-all duration-300 border-r border-white/20`}
+                          title={`${index + 1} Yıldız: ${count} Kişi`}
+                        />
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Transportation Satisfaction Distribution */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-semibold text-slate-500">Ulaşım Memnuniyeti Dağılımı</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow bg-stone-100 rounded-full h-3.5 overflow-hidden flex">
+                    {data.distributions.transportationSatisfaction?.map((count, index) => {
+                      const total = data.distributions.transportationSatisfaction.reduce((a, b) => a + b, 0);
                       const widthPct = total > 0 ? (count / total) * 100 : 0;
                       const bgColors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-455', 'bg-emerald-500', 'bg-green-500'];
                       return widthPct > 0 ? (
@@ -485,7 +538,7 @@ export default function DashboardPage() {
               <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Yolcu adı, Rezervasyon veya Tur adı..."
+                placeholder="Yolcu adı, E-posta, Rezervasyon veya Tur..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all shadow-sm"
@@ -532,7 +585,7 @@ export default function DashboardPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-stone-50 border-b border-stone-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="p-4 pl-6">Yolcu / Rezervasyon</th>
+                  <th className="p-4 pl-6">Yolcu / İletişim / Rezervasyon</th>
                   <th className="p-4">Tur Programı</th>
                   <th className="p-4">Ortalama / Detay Puanlar</th>
                   <th className="p-4">Tarih</th>
@@ -552,7 +605,8 @@ export default function DashboardPage() {
                       (fb.tourSatisfaction +
                         fb.guidePerformance +
                         fb.hotelSatisfaction +
-                        fb.restaurantSatisfaction) / 4;
+                        fb.restaurantSatisfaction +
+                        fb.transportationSatisfaction) / 5;
 
                     return (
                       <tr
@@ -564,9 +618,16 @@ export default function DashboardPage() {
                           <span className="font-semibold text-slate-900 block group-hover:text-red-750 transition-colors">
                             {fb.passengerName}
                           </span>
-                          <span className="text-xs text-slate-650 font-mono bg-stone-100 border border-stone-200 px-2 py-0.5 rounded inline-block shadow-sm">
-                            {fb.reservationNo}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <span className="text-[10px] text-slate-600 font-mono bg-stone-100 border border-stone-200 px-1.5 py-0.5 rounded inline-block shadow-sm">
+                              {fb.reservationNo}
+                            </span>
+                            {fb.email && (
+                              <span className="text-[11px] text-slate-500 font-medium">
+                                {fb.email}
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Tour Name */}
@@ -583,10 +644,11 @@ export default function DashboardPage() {
                             </span>
                           </div>
                           <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-slate-450 max-w-[240px]">
-                            <span>Tur: <strong className="text-slate-600">{fb.tourSatisfaction}</strong></span>
-                            <span>Rehber: <strong className="text-slate-600">{fb.guidePerformance}</strong></span>
-                            <span>Otel: <strong className="text-slate-600">{fb.hotelSatisfaction}</strong></span>
-                            <span>Yemek: <strong className="text-slate-600">{fb.restaurantSatisfaction}</strong></span>
+                            <span>Tur: <strong className="text-slate-655">{fb.tourSatisfaction}</strong></span>
+                            <span>Rehber: <strong className="text-slate-655">{fb.guidePerformance}</strong></span>
+                            <span>Otel: <strong className="text-slate-655">{fb.hotelSatisfaction}</strong></span>
+                            <span>Yemek: <strong className="text-slate-655">{fb.restaurantSatisfaction}</strong></span>
+                            <span className="col-span-2">Ulaşım: <strong className="text-slate-655">{fb.transportationSatisfaction}</strong></span>
                           </div>
                         </td>
 

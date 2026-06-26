@@ -6,23 +6,27 @@ import { Star, ShieldCheck, Compass, Send, CheckCircle2, MessageSquare, AlertCir
 
 interface FeedbackFormState {
   passengerName: string;
+  email: string;
   tourName: string;
   reservationNo: string;
   tourSatisfaction: number;
   guidePerformance: number;
   hotelSatisfaction: number;
   restaurantSatisfaction: number;
+  transportationSatisfaction: number;
   additionalComments: string;
 }
 
 const initialFormState: FeedbackFormState = {
   passengerName: '',
+  email: '',
   tourName: '',
   reservationNo: '',
   tourSatisfaction: 0,
   guidePerformance: 0,
   hotelSatisfaction: 0,
   restaurantSatisfaction: 0,
+  transportationSatisfaction: 0,
   additionalComments: '',
 };
 
@@ -41,6 +45,7 @@ export default function SurveyPage() {
     guidePerformance: 0,
     hotelSatisfaction: 0,
     restaurantSatisfaction: 0,
+    transportationSatisfaction: 0,
   });
 
   const ratingCategories = [
@@ -63,6 +68,11 @@ export default function SurveyPage() {
       key: 'restaurantSatisfaction' as const,
       label: 'Restoran & Yemek Memnuniyeti',
       description: 'Tur esnasında tercih edilen restoranlar ve yemeklerin lezzeti.',
+    },
+    {
+      key: 'transportationSatisfaction' as const,
+      label: 'Ulaşım Hizmetleri Memnuniyeti',
+      description: 'Uçuşlar, transferler ve tur esnasındaki otobüslerin konforu.',
     },
   ];
 
@@ -91,10 +101,17 @@ export default function SurveyPage() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+    
     if (!form.passengerName.trim()) {
       newErrors.passengerName = 'Yolcu adı soyadı gereklidir.';
     } else if (form.passengerName.trim().length < 2) {
       newErrors.passengerName = 'Yolcu adı en az 2 karakter olmalıdır.';
+    }
+
+    if (!form.email.trim()) {
+      newErrors.email = 'E-posta adresi gereklidir.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      newErrors.email = 'Geçerli bir e-posta adresi giriniz.';
     }
 
     if (!form.tourName.trim()) {
@@ -175,7 +192,7 @@ export default function SurveyPage() {
           />
         </div>
         
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-100/60 mb-4 text-red-800 text-xs font-semibold tracking-wider uppercase shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-55 border border-red-100/60 mb-4 text-red-800 text-xs font-semibold tracking-wider uppercase shadow-sm">
           <Compass className="w-3.5 h-3.5 text-red-700 animate-spin duration-[20s]" /> Ejder Turizm Memnuniyet Portalı
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 bg-clip-text">
@@ -204,7 +221,7 @@ export default function SurveyPage() {
               </p>
               
               {simulatedMode && (
-                <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs leading-relaxed max-w-xs mx-auto text-left flex items-start gap-2">
+                <div className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed max-w-xs mx-auto text-left flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>
                     <strong>Demo Modu:</strong> DATABASE_URL ayarlanmadığı için bu gönderim simüle edilmiş ve veritabanına kaydedilmemiştir. Ancak Resend mail gönderimi tetiklenmiştir.
@@ -232,14 +249,15 @@ export default function SurveyPage() {
 
               {/* Step 1: Passenger Info */}
               <div className="space-y-4">
-                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-100 pb-2">
+                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-105 pb-2">
                   <ShieldCheck className="w-4 h-4" /> 1. Yolcu ve Seyahat Bilgileri
                 </h3>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Name Input */}
                   <div id="passengerName">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Adınız Soyadınız
+                      Adınız Soyadınız <span className="text-red-650 font-bold">*</span>
                     </label>
                     <input
                       type="text"
@@ -256,9 +274,32 @@ export default function SurveyPage() {
                     )}
                   </div>
 
+                  {/* Email Input */}
+                  <div id="email">
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                      E-posta Adresiniz <span className="text-red-650 font-bold">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="email"
+                      value={form.email}
+                      onChange={handleInputChange}
+                      placeholder="Örn. ahmet@ejderturizm.com"
+                      className={`w-full bg-white border ${
+                        errors.email ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Reservation No */}
                   <div id="reservationNo">
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Rezervasyon Numarası
+                      Rezervasyon Numarası <span className="text-red-655 font-bold">*</span>
                     </label>
                     <input
                       type="text"
@@ -274,31 +315,32 @@ export default function SurveyPage() {
                       <p className="mt-1 text-xs text-red-600">{errors.reservationNo}</p>
                     )}
                   </div>
-                </div>
 
-                <div id="tourName">
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                    Katıldığınız Tur Programı
-                  </label>
-                  <input
-                    type="text"
-                    name="tourName"
-                    value={form.tourName}
-                    onChange={handleInputChange}
-                    placeholder="Örn. Klasik İtalya ve Toskana Turu"
-                    className={`w-full bg-white border ${
-                      errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
-                    } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
-                  />
-                  {errors.tourName && (
-                    <p className="mt-1 text-xs text-red-600">{errors.tourName}</p>
-                  )}
+                  {/* Tour Name */}
+                  <div id="tourName">
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                      Katıldığınız Tur Programı <span className="text-red-655 font-bold">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="tourName"
+                      value={form.tourName}
+                      onChange={handleInputChange}
+                      placeholder="Örn. Klasik İtalya Turu"
+                      className={`w-full bg-white border ${
+                        errors.tourName ? 'border-red-500 focus:ring-red-200' : 'border-stone-300 focus:border-red-700 focus:ring-red-100'
+                      } rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-sm`}
+                    />
+                    {errors.tourName && (
+                      <p className="mt-1 text-xs text-red-600">{errors.tourName}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Step 2: Evaluation */}
               <div className="space-y-5 pt-2">
-                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-100 pb-2">
+                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-105 pb-2">
                   <Star className="w-4 h-4" /> 2. Memnuniyet Değerlendirmesi
                 </h3>
 
@@ -362,7 +404,7 @@ export default function SurveyPage() {
 
               {/* Step 3: Comments */}
               <div className="space-y-3 pt-2">
-                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-100 pb-2">
+                <h3 className="text-md font-semibold text-red-800 flex items-center gap-2 border-b border-stone-105 pb-2">
                   <MessageSquare className="w-4 h-4" /> 3. Ekstra Yorum ve Görüşleriniz
                 </h3>
 
@@ -376,7 +418,7 @@ export default function SurveyPage() {
                     className="w-full bg-white border border-stone-300 focus:border-red-700 focus:ring-red-100 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 resize-y min-h-[90px] shadow-sm"
                   />
                   {errors.additionalComments && (
-                    <p className="mt-1 text-xs text-red-650">{errors.additionalComments}</p>
+                    <p className="mt-1 text-xs text-red-655">{errors.additionalComments}</p>
                   )}
                 </div>
               </div>
@@ -385,7 +427,7 @@ export default function SurveyPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-700 via-red-650 to-amber-600 hover:from-red-800 hover:via-red-750 hover:to-amber-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-red-750/15 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99] transition-all duration-200 cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-700 via-red-650 to-amber-600 hover:from-red-800 hover:via-red-750 hover:to-amber-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-red-750/15 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99] transition-all duration-200 cursor-pointer animate-fade-in"
               >
                 {isSubmitting ? (
                   <>

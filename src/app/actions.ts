@@ -29,7 +29,6 @@ export async function submitFeedbackAction(rawData: any) {
     // 2. Check if the database connection URL is configured before running database queries
     if (!process.env.DATABASE_URL) {
       console.error('❌ DATABASE_URL is not set. Saving data will fail.');
-      // Simulate successful save in dev when no database is connected so the user can test the UI/Mail system
       console.warn('⚠️ Simulating successful save for demonstration purposes.');
       
       // Attempt to send email even if DB is skipped
@@ -58,12 +57,14 @@ export async function submitFeedbackAction(rawData: any) {
     const savedFeedback = await prisma.feedback.create({
       data: {
         passengerName: feedbackData.passengerName,
+        email: feedbackData.email,
         tourName: feedbackData.tourName,
         reservationNo: feedbackData.reservationNo,
         tourSatisfaction: feedbackData.tourSatisfaction,
         guidePerformance: feedbackData.guidePerformance,
         hotelSatisfaction: feedbackData.hotelSatisfaction,
         restaurantSatisfaction: feedbackData.restaurantSatisfaction,
+        transportationSatisfaction: feedbackData.transportationSatisfaction,
         additionalComments: feedbackData.additionalComments || null,
       },
     });
