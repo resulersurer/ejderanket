@@ -21,7 +21,7 @@ function getScoreBadge(score: number): string {
 
 export async function sendFeedbackNotification(feedback: FeedbackInput) {
   const toEmail = process.env.NOTIFICATION_EMAIL || 'musteridestek@ejderturizm.com.tr';
-  const fromEmail = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
+  const fromEmail = process.env.SENDER_EMAIL || 'bilgi@ejderturizm.com.tr';
 
   if (!resend) {
     console.warn('⚠️ RESEND_API_KEY is not set. Skipping email notification dispatch.');
