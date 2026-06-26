@@ -1,0 +1,23 @@
+datasource db {
+  provider  = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Feedback {
+  id                     String   @id @default(uuid())
+  passengerName          String   @map("passenger_name")
+  tourName               String   @map("tour_name")
+  reservationNo          String   @unique @map("reservation_no")
+  tourSatisfaction       Int      @map("tour_satisfaction")
+  guidePerformance       Int      @map("guide_performance")
+  hotelSatisfaction      Int      @map("hotel_satisfaction")
+  restaurantSatisfaction Int      @map("restaurant_satisfaction")
+  additionalComments     String?  @map("additional_comments") @db.Text
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  @@index([reservationNo])
+  @@map("feedbacks")
+}
